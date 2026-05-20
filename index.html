@@ -1,0 +1,1334 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Training Transaction Tracker</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+<style>
+:root{
+  --bg:#f4f7fb;
+  --card:#ffffff;
+  --text:#1f2937;
+  --muted:#6b7280;
+  --primary:#2563eb;
+  --primary-hover:#1d4ed8;
+  --danger:#ef4444;
+  --success:#10b981;
+  --warning:#f59e0b;
+  --border:#e5e7eb;
+  --shadow:0 10px 25px rgba(0,0,0,.08);
+}
+
+body.dark{
+  --bg:#111827;
+  --card:#1f2937;
+  --text:#f9fafb;
+  --muted:#9ca3af;
+  --border:#374151;
+  --shadow:0 10px 25px rgba(0,0,0,.35);
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  font-family:'Inter',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  transition:.3s;
+}
+
+.container{
+  width:min(1500px,95%);
+  margin:auto;
+  padding:24px 0 50px;
+}
+
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+  flex-wrap:wrap;
+  margin-bottom:24px;
+}
+
+.title h1{
+  font-size:28px;
+  font-weight:700;
+}
+
+.title p{
+  color:var(--muted);
+  margin-top:5px;
+}
+
+.btn-group{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+}
+
+button,
+input,
+select,
+textarea{
+  font-family:inherit;
+}
+
+.btn{
+  border:none;
+  padding:12px 16px;
+  border-radius:12px;
+  cursor:pointer;
+  font-weight:600;
+  transition:.2s;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.btn-primary{
+  background:var(--primary);
+  color:#fff;
+}
+
+.btn-primary:hover{
+  background:var(--primary-hover);
+}
+
+.btn-secondary{
+  background:#e5e7eb;
+  color:#111827;
+}
+
+.btn-danger{
+  background:var(--danger);
+  color:#fff;
+}
+
+.btn-success{
+  background:var(--success);
+  color:#fff;
+}
+
+.card{
+  background:var(--card);
+  border-radius:20px;
+  box-shadow:var(--shadow);
+  padding:20px;
+  margin-bottom:24px;
+}
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:15px;
+  margin-bottom:24px;
+}
+
+.stat-box{
+  background:var(--card);
+  border-radius:20px;
+  padding:20px;
+  box-shadow:var(--shadow);
+}
+
+.stat-box h3{
+  color:var(--muted);
+  font-size:14px;
+  margin-bottom:8px;
+}
+
+.stat-box p{
+  font-size:30px;
+  font-weight:700;
+}
+
+.filter-grid,
+.form-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:16px;
+}
+
+.input-group{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.input-group label{
+  font-size:14px;
+  font-weight:600;
+}
+
+.input-group input,
+.input-group select,
+.input-group textarea{
+  border:1px solid var(--border);
+  background:transparent;
+  color:var(--text);
+  padding:12px;
+  border-radius:12px;
+  outline:none;
+}
+
+.input-group textarea{
+  resize:vertical;
+  min-height:100px;
+}
+
+.filter-actions{
+  margin-top:18px;
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.table-container{
+  overflow:auto;
+  border-radius:16px;
+}
+
+.table{
+  width:100%;
+  border-collapse:collapse;
+  min-width:1400px;
+}
+
+.table th,
+.table td{
+  padding:14px;
+  border-bottom:1px solid var(--border);
+  text-align:left;
+  font-size:14px;
+}
+
+.table th{
+  position:sticky;
+  top:0;
+  background:var(--card);
+  z-index:5;
+  cursor:pointer;
+}
+
+.table tr:hover{
+  background:rgba(37,99,235,.05);
+}
+
+.badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:7px 14px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:600;
+  line-height:1;
+  min-height:30px;
+  white-space:nowrap;
+}
+.table td:nth-child(9),
+.table th:nth-child(9){
+  text-align:center;
+}
+.progress-done{
+  background:#dcfce7;
+  color:#166534;
+  border:1px solid #bbf7d0;
+}
+
+.progress-reg{
+  background:#dbeafe;
+  color:#1d4ed8;
+  border:1px solid #bfdbfe;
+}
+
+.progress-check{
+  background:#fef3c7;
+  color:#92400e;
+  border:1px solid #fde68a;
+}
+
+.progress-batal{
+  background:#fee2e2;
+  color:#991b1b;
+  border:1px solid #fecaca;
+}
+
+.action-buttons{
+  display:flex;
+  gap:8px;
+}
+
+.icon-btn{
+  border:none;
+  width:36px;
+  height:36px;
+  border-radius:10px;
+  cursor:pointer;
+}
+
+.edit-btn{
+  background:#dbeafe;
+  color:#1d4ed8;
+}
+
+.delete-btn{
+  background:#fee2e2;
+  color:#991b1b;
+}
+
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.5);
+  display:none;
+  justify-content:center;
+  align-items:center;
+  padding:20px;
+  z-index:1000;
+}
+
+.modal.active{
+  display:flex;
+  animation:fade .25s ease;
+}
+
+@keyframes fade{
+  from{opacity:0;transform:scale(.95)}
+  to{opacity:1;transform:scale(1)}
+}
+
+.modal-content{
+  width:min(1100px,100%);
+  max-height:90vh;
+  overflow:auto;
+  background:var(--card);
+  border-radius:24px;
+  padding:24px;
+  box-shadow:var(--shadow);
+}
+
+.modal-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:20px;
+}
+
+.close-btn{
+  background:none;
+  border:none;
+  font-size:24px;
+  cursor:pointer;
+  color:var(--text);
+}
+
+.modal-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:10px;
+  margin-top:24px;
+}
+
+.master-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+  gap:20px;
+}
+
+.master-tools{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:24px;
+  padding-bottom:20px;
+  border-bottom:1px solid var(--border);
+}
+
+.master-box{
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:18px;
+}
+
+.master-list{
+  margin-top:15px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  max-height:300px;
+  overflow:auto;
+}
+
+.master-item{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:10px;
+  border-radius:12px;
+  background:rgba(0,0,0,.04);
+}
+
+.pagination{
+  display:flex;
+  justify-content:flex-end;
+  align-items:center;
+  gap:10px;
+}
+
+.toast{
+  position:fixed;
+  right:20px;
+  bottom:20px;
+  background:#111827;
+  color:#fff;
+  padding:14px 18px;
+  border-radius:12px;
+  display:none;
+  z-index:9999;
+}
+
+.toast.show{
+  display:block;
+  animation:fade .3s ease;
+}
+
+.file-link{
+  color:var(--primary);
+  text-decoration:none;
+  font-weight:600;
+}
+
+@media(max-width:768px){
+  .header{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+
+  .btn-group{
+    width:100%;
+  }
+
+  .btn{
+    width:100%;
+    justify-content:center;
+  }
+}
+
+.table-footer{
+  margin-top:20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:15px;
+}
+
+.show-entries{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.show-entries select{
+  padding:10px 14px;
+  border-radius:10px;
+  border:1px solid var(--border);
+  background:var(--card);
+  color:var(--text);
+}
+
+.pagination{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="header">
+    <div class="title">
+      <h1><i class="fa-solid fa-graduation-cap"></i> Learning Tracker</h1>
+      <p>Kustodian Sentral Efek Indonesia</p>
+    </div>
+
+    <div class="btn-group">
+      <button class="btn btn-primary" onclick="openTransactionModal()">
+        <i class="fa-solid fa-plus"></i>
+        Tambah Data
+      </button>
+
+      <button class="btn btn-secondary" onclick="openMasterModal()">
+        <i class="fa-solid fa-database"></i>
+        Database
+      </button>
+
+      <button class="btn btn-secondary" onclick="toggleDarkMode()">
+        <i class="fa-solid fa-moon"></i>
+      </button>
+
+      <input type="file" id="importFile" hidden accept=".csv">
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat-box">
+      <h3>Total Data</h3>
+      <p id="totalData">0</p>
+    </div>
+
+    <div class="stat-box">
+      <h3>Done</h3>
+      <p id="doneData">0</p>
+    </div>
+
+    <div class="stat-box">
+      <h3>Registrasi</h3>
+      <p id="regData">0</p>
+    </div>
+
+    <div class="stat-box">
+      <h3>Batal</h3>
+      <p id="cancelData">0</p>
+    </div>
+  </div>
+
+<div class="card">
+
+  <div style="
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    cursor:pointer;
+    margin-bottom:18px;
+  "
+  onclick="toggleFilter()">
+
+    <h2>
+      <i class="fa-solid fa-filter"></i>
+      Data Filter
+    </h2>
+
+    <button
+      type="button"
+      id="filterToggleBtn"
+      class="btn btn-secondary"
+      style="padding:8px 12px"
+    >
+      <i class="fa-solid fa-chevron-down"></i>
+      Show
+    </button>
+
+  </div>
+
+  <div id="filterSection" style="display:none;">
+    
+    <div class="filter-grid">
+      <div class="input-group">
+        <label>Nama</label>
+        <input type="text" id="filterNama" placeholder="Cari nama...">
+      </div>
+
+      <div class="input-group">
+        <label>Divisi</label>
+        <select id="filterDivisi">
+          <option value="">Semua Divisi</option>
+        </select>
+      </div>
+
+      <div class="input-group">
+        <label>Nama Pelatihan</label>
+        <select id="filterTraining">
+          <option value="">Semua Pelatihan</option>
+        </select>
+      </div>
+
+      <div class="input-group">
+      <label>Tanggal Mulai</label>
+      <input type="date" id="filterStartDate">
+      </div>
+
+      <div class="input-group">
+      <label>Tanggal Selesai</label>
+      <input type="date" id="filterEndDate">
+      </div>
+
+      <div class="input-group">
+        <label>Progress</label>
+        <select id="filterProgress">
+          <option value="">Semua Progress</option>
+          <option>Progress Check</option>
+          <option>Registrasi</option>
+          <option>Done</option>
+          <option>Batal</option>
+        </select>
+      </div>
+    
+</div>
+    <div class="filter-actions">
+      <button class="btn btn-primary" onclick="applyFilter()">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        Search
+      </button>
+
+      <button class="btn btn-secondary" onclick="resetFilter()">
+        <i class="fa-solid fa-rotate"></i>
+        Reset Filter
+      </button>
+    </div>
+
+  </div>
+</div>
+
+  <div class="card">
+    <div class="table-container">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Nama</th>
+            <th>Divisi</th>
+            <th>Nama Pelatihan</th>
+            <th>Tanggal Mulai</th>
+            <th>Tanggal Selesai</th>
+            <th>Vendor</th>
+            <th>Lokasi</th>
+            <th>Progress</th>
+            <th>TNF</th>
+            <th>UPD</th>
+            <th>Note</th>
+            <th>Data</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+
+<div class="table-footer">
+
+  <div class="show-entries">
+    <label>Show</label>
+
+    <select id="rowsPerPageSelect"
+      onchange="changeRowsPerPage()">
+      <option value="10">10</option>
+      <option value="25">25</option>
+      <option value="50">50</option>
+      <option value="100">100</option>
+    </select>
+
+    <span>entries</span>
+  </div>
+
+  <div class="pagination">
+    <button class="btn btn-secondary" onclick="prevPage()">Prev</button>
+
+    <span id="pageInfo">Page 1</span>
+
+    <button class="btn btn-secondary" onclick="nextPage()">Next</button>
+  </div>
+
+</div>
+
+<div class="modal" id="transactionModal">
+  <div class="modal-content">
+
+    <div class="modal-header">
+      <h2>Tambah Transaksi</h2>
+      <button class="close-btn" onclick="closeTransactionModal()">&times;</button>
+    </div>
+
+    <form id="transactionForm">
+      <div class="form-grid">
+
+        <div class="input-group">
+          <label>No</label>
+          <input type="text" id="transactionNo" readonly>
+        </div>
+
+        <div class="input-group">
+          <label>Nama</label>
+          <input type="text" id="nama" required>
+        </div>
+
+        <div class="input-group">
+          <label>Divisi</label>
+          <select id="divisi" required></select>
+        </div>
+
+        <div class="input-group">
+          <label>Nama Pelatihan</label>
+          <input list="trainingList" id="training" required>
+          <datalist id="trainingList"></datalist>
+        </div>
+
+        <div class="input-group">
+        <label>Tanggal Mulai</label>
+        <input type="date" id="tanggalMulai" required>
+        </div>
+
+        <div class="input-group">
+       <label>Tanggal Selesai</label>
+       <input type="date" id="tanggalSelesai" required>
+       </div>
+
+        <div class="input-group">
+          <label>Vendor</label>
+          <input list="vendorList" id="vendor" required>
+          <datalist id="vendorList"></datalist>
+        </div>
+
+        <div class="input-group">
+          <label>Lokasi</label>
+          <input list="lokasiList" id="lokasi" required>
+          <datalist id="lokasiList"></datalist>
+        </div>
+
+        <div class="input-group">
+          <label>Progress</label>
+          <select id="progress" required>
+            <option value="">Pilih</option>
+            <option>Progress Check</option>
+            <option>Registrasi</option>
+            <option>Done</option>
+            <option>Batal</option>
+          </select>
+        </div>
+
+        <div class="input-group">
+          <label>TNF</label>
+          <select id="tnf" required>
+            <option value="">Pilih</option>
+            <option>Sent</option>
+            <option>Not Yet</option>
+          </select>
+        </div>
+
+        <div class="input-group">
+          <label>UPD</label>
+          <select id="upd" required>
+            <option value="">Pilih</option>
+            <option>Yes</option>
+            <option>No</option>
+          </select>
+        </div>
+
+        <div class="input-group" style="grid-column:1/-1">
+          <label>Note</label>
+          <textarea id="note"></textarea>
+        </div>
+
+        <div class="input-group" style="grid-column:1/-1">
+          <label>Upload Data</label>
+          <input type="file" id="fileData" accept=".pdf,.xlsx,.xls,.doc,.docx,.png,.jpg,.jpeg">
+        </div>
+
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" onclick="closeTransactionModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save</button>
+      </div>
+    </form>
+
+  </div>
+</div>
+
+<div class="modal" id="masterModal">
+  <div class="modal-content">
+
+    <div class="modal-header">
+      <h2>Master Database</h2>
+      <button class="close-btn" onclick="closeMasterModal()">&times;</button>
+    </div>
+
+<div class="master-tools"
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:20px;
+">
+
+  <button class="btn btn-success" onclick="exportData()">
+    <i class="fa-solid fa-file-export"></i>
+    Export Excel
+  </button>
+
+  <button class="btn btn-secondary"
+    onclick="document.getElementById('importFile').click()">
+    <i class="fa-solid fa-file-import"></i>
+    Import Data
+  </button>
+
+  <button class="btn btn-danger" onclick="clearAllData()">
+    <i class="fa-solid fa-trash"></i>
+    Clear Data
+  </button>
+
+</div>
+
+    <div class="master-grid">
+
+      <div class="master-box">
+        <h3>Nama Pelatihan</h3>
+
+        <div style="display:flex;gap:10px;margin-top:15px">
+          <input type="text" id="newTraining" placeholder="Tambah pelatihan" style="flex:1;padding:12px;border-radius:12px;border:1px solid var(--border)">
+          <button class="btn btn-primary" onclick="addMaster('training')">Tambah</button>
+        </div>
+
+        <div class="master-list" id="trainingMasterList"></div>
+      </div>
+
+      <div class="master-box">
+        <h3>Vendor</h3>
+
+        <div style="display:flex;gap:10px;margin-top:15px">
+          <input type="text" id="newVendor" placeholder="Tambah vendor" style="flex:1;padding:12px;border-radius:12px;border:1px solid var(--border)">
+          <button class="btn btn-primary" onclick="addMaster('vendor')">Tambah</button>
+        </div>
+
+        <div class="master-list" id="vendorMasterList"></div>
+      </div>
+
+      <div class="master-box">
+        <h3>Lokasi</h3>
+
+        <div style="display:flex;gap:10px;margin-top:15px">
+          <input type="text" id="newLokasi" placeholder="Tambah lokasi" style="flex:1;padding:12px;border-radius:12px;border:1px solid var(--border)">
+          <button class="btn btn-primary" onclick="addMaster('lokasi')">Tambah</button>
+        </div>
+
+        <div class="master-list" id="lokasiMasterList"></div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const divisions = [
+'SKE','SMR','SPI','JKU','PTA','PWS','PSA','TIF','PIN','PSI','PPU','HIN','HKM','PSU','KEU'
+];
+
+let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+
+let masterData = JSON.parse(localStorage.getItem('masterData')) || {
+  training:['Leadership Training'],
+  vendor:['Internal Vendor'],
+  lokasi:['Jakarta']
+};
+
+let currentPage = 1;
+let rowsPerPage = 10;
+let editIndex = null;
+
+function saveLocal(){
+  localStorage.setItem('transactions', JSON.stringify(transactions));
+  localStorage.setItem('masterData', JSON.stringify(masterData));
+}
+
+function showToast(message){
+  const toast = document.getElementById('toast');
+  toast.innerText = message;
+  toast.classList.add('show');
+
+  setTimeout(()=>{
+    toast.classList.remove('show');
+  },2500);
+}
+
+function initDivisions(){
+  const divisi = document.getElementById('divisi');
+  const filterDivisi = document.getElementById('filterDivisi');
+
+  divisions.forEach(item=>{
+    divisi.innerHTML += `<option>${item}</option>`;
+    filterDivisi.innerHTML += `<option>${item}</option>`;
+  });
+}
+
+function renderMasterOptions(){
+  document.getElementById('trainingList').innerHTML = masterData.training.map(item=>`<option value="${item}">`).join('');
+  document.getElementById('vendorList').innerHTML = masterData.vendor.map(item=>`<option value="${item}">`).join('');
+  document.getElementById('lokasiList').innerHTML = masterData.lokasi.map(item=>`<option value="${item}">`).join('');
+
+  const filterTraining = document.getElementById('filterTraining');
+  filterTraining.innerHTML = '<option value="">Semua Pelatihan</option>';
+
+  masterData.training.forEach(item=>{
+    filterTraining.innerHTML += `<option>${item}</option>`;
+  });
+
+  renderMasterList();
+}
+
+function renderMasterList(){
+  renderSingleMaster('training','trainingMasterList');
+  renderSingleMaster('vendor','vendorMasterList');
+  renderSingleMaster('lokasi','lokasiMasterList');
+}
+
+function renderSingleMaster(type, elementId){
+  const el = document.getElementById(elementId);
+
+  el.innerHTML = masterData[type].map((item,index)=>`
+    <div class="master-item">
+      <span>${item}</span>
+
+      <div style="display:flex;gap:8px">
+        <button class="icon-btn edit-btn" onclick="editMaster('${type}',${index})">
+          <i class="fa-solid fa-pen"></i>
+        </button>
+
+        <button class="icon-btn delete-btn" onclick="deleteMaster('${type}',${index})">
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function addMaster(type){
+  const inputMap = {
+    training:'newTraining',
+    vendor:'newVendor',
+    lokasi:'newLokasi'
+  };
+
+  const input = document.getElementById(inputMap[type]);
+
+  if(!input.value.trim()) return;
+
+  masterData[type].push(input.value.trim());
+  input.value='';
+
+  saveLocal();
+  renderMasterOptions();
+
+  showToast('Master data berhasil ditambahkan');
+}
+
+function editMaster(type,index){
+  const newValue = prompt('Edit Data', masterData[type][index]);
+
+  if(newValue){
+    masterData[type][index] = newValue;
+    saveLocal();
+    renderMasterOptions();
+    showToast('Master data berhasil diupdate');
+  }
+}
+
+function deleteMaster(type,index){
+  if(confirm('Hapus data?')){
+    masterData[type].splice(index,1);
+    saveLocal();
+    renderMasterOptions();
+    showToast('Master data berhasil dihapus');
+  }
+}
+
+function openTransactionModal(){
+  document.getElementById('transactionModal').classList.add('active');
+  document.getElementById('transactionNo').value = transactions.length + 1;
+}
+
+function closeTransactionModal(){
+  document.getElementById('transactionModal').classList.remove('active');
+  document.getElementById('transactionForm').reset();
+  editIndex = null;
+}
+
+function openMasterModal(){
+  document.getElementById('masterModal').classList.add('active');
+}
+
+function closeMasterModal(){
+  document.getElementById('masterModal').classList.remove('active');
+}
+
+function getBadgeClass(progress){
+  if(progress === 'Done') return 'progress-done';
+  if(progress === 'Registrasi') return 'progress-reg';
+  if(progress === 'Progress Check') return 'progress-check';
+  return 'progress-batal';
+}
+
+function renderTable(data = transactions){
+  const tbody = document.getElementById('tableBody');
+
+  const start = (currentPage - 1) * rowsPerPage;
+  const paginated = data.slice(start, start + rowsPerPage);
+
+  tbody.innerHTML = paginated.map((item,index)=>`
+    <tr>
+      <td>${start + index + 1}</td>
+      <td>${item.nama}</td>
+      <td>${item.divisi}</td>
+      <td>${item.training}</td>
+      <td>${item.tanggalMulai}</td>
+      <td>${item.tanggalSelesai}</td>
+      <td>${item.vendor}</td>
+      <td>${item.lokasi}</td>
+      <td>
+        <span class="badge ${getBadgeClass(item.progress)}">
+          ${item.progress}
+        </span>
+      </td>
+      <td>${item.tnf}</td>
+      <td>${item.upd}</td>
+      <td>${item.note || '-'}</td>
+      <td>
+        ${item.fileName ? `<span class="file-link">${item.fileName}</span>` : '-'}
+      </td>
+      <td>
+        <div class="action-buttons">
+          <button class="icon-btn edit-btn" onclick="editTransaction(${transactions.indexOf(item)})">
+            <i class="fa-solid fa-pen"></i>
+          </button>
+
+          <button class="icon-btn delete-btn" onclick="deleteTransaction(${transactions.indexOf(item)})">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+
+  document.getElementById('pageInfo').innerText = `Page ${currentPage}`;
+
+  updateStats();
+}
+
+function updateStats(){
+  document.getElementById('totalData').innerText = transactions.length;
+  document.getElementById('doneData').innerText = transactions.filter(i=>i.progress==='Done').length;
+  document.getElementById('regData').innerText = transactions.filter(i=>i.progress==='Registrasi').length;
+  document.getElementById('cancelData').innerText = transactions.filter(i=>i.progress==='Batal').length;
+}
+
+function editTransaction(index){
+  const item = transactions[index];
+
+  editIndex = index;
+
+  document.getElementById('nama').value = item.nama;
+  document.getElementById('divisi').value = item.divisi;
+  document.getElementById('training').value = item.training;
+  document.getElementById('tanggalMulai').value = item.tanggalMulai;
+  document.getElementById('tanggalSelesai').value = item.tanggalSelesai;
+  document.getElementById('vendor').value = item.vendor;
+  document.getElementById('lokasi').value = item.lokasi;
+  document.getElementById('progress').value = item.progress;
+  document.getElementById('tnf').value = item.tnf;
+  document.getElementById('upd').value = item.upd;
+  document.getElementById('note').value = item.note;
+
+  openTransactionModal();
+}
+
+function deleteTransaction(index){
+  if(confirm('Hapus transaksi ini?')){
+    transactions.splice(index,1);
+    saveLocal();
+    renderTable();
+    showToast('Data berhasil dihapus');
+  }
+}
+
+function applyFilter(){
+  const nama = document.getElementById('filterNama').value.toLowerCase();
+  const divisi = document.getElementById('filterDivisi').value;
+  const training = document.getElementById('filterTraining').value;
+  const startDate = document.getElementById('filterStartDate').value;
+  const endDate = document.getElementById('filterEndDate').value;
+  const progress = document.getElementById('filterProgress').value;
+
+  const filtered = transactions.filter(item=>{
+    return (
+      item.nama.toLowerCase().includes(nama) &&
+      (divisi === '' || item.divisi === divisi) &&
+      (training === '' || item.training === training) &&
+      (startDate === '' || item.tanggalMulai === startDate) &&
+      (endDate === '' || item.tanggalSelesai === endDate) &&
+      (progress === '' || item.progress === progress)
+    );
+  });
+
+  currentPage = 1;
+  renderTable(filtered);
+}
+
+function resetFilter(){
+  document.getElementById('filterNama').value='';
+  document.getElementById('filterDivisi').value='';
+  document.getElementById('filterTraining').value='';
+  document.getElementById('filterStartDate').value='';
+  document.getElementById('filterEndDate').value='';
+  document.getElementById('filterProgress').value='';
+
+  renderTable();
+}
+
+function changeRowsPerPage(){
+  rowsPerPage = parseInt(
+    document.getElementById('rowsPerPageSelect').value
+  );
+
+  currentPage = 1;
+
+  renderTable();
+}
+
+function nextPage(){
+  const totalPage = Math.ceil(transactions.length / rowsPerPage);
+
+  if(currentPage < totalPage){
+    currentPage++;
+    renderTable();
+  }
+}
+
+function prevPage(){
+  if(currentPage > 1){
+    currentPage--;
+    renderTable();
+  }
+}
+
+function toggleDarkMode(){
+  document.body.classList.toggle('dark');
+}
+
+function exportData(){
+  if(transactions.length === 0){
+    alert('Tidak ada data');
+    return;
+  }
+
+  const headers = Object.keys(transactions[0]);
+
+  const csvRows = [
+  headers.join(';'),
+  ...transactions.map(row=>
+    headers.map(field=>`"${row[field] || ''}"`).join(';')
+  )
+];
+
+  const blob = new Blob([csvRows.join('\n')], {type:'text/csv'});
+
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'training_tracker.csv';
+  a.click();
+
+  showToast('Export berhasil');
+}
+
+// IMPORT CSV
+
+document.getElementById('importFile').addEventListener('change', function(e){
+  const file = e.target.files[0];
+
+  if(!file) return;
+
+  const reader = new FileReader();
+
+  reader.onload = function(event){
+    const lines = event.target.result.split('\n');
+
+    const headers = lines[0].split(';');
+
+    const imported = [];
+
+    for(let i=1;i<lines.length;i++){
+      if(!lines[i]) continue;
+
+      const obj = {};
+      const currentLine = lines[i].split(';');
+
+      headers.forEach((header,index)=>{
+        obj[header.replace(/"/g,'')] = currentLine[index]?.replace(/"/g,'');
+      });
+
+      imported.push(obj);
+    }
+
+    transactions = [...transactions, ...imported];
+
+    saveLocal();
+    renderTable();
+
+    showToast('Import berhasil');
+  };
+
+  reader.readAsText(file);
+});
+
+// SAVE TRANSACTION
+
+document.getElementById('transactionForm').addEventListener('submit', function(e){
+  e.preventDefault();
+
+  const fileInput = document.getElementById('fileData');
+  const file = fileInput.files[0];
+
+  const allowed = ['pdf','xlsx','xls','doc','docx','png','jpg','jpeg'];
+
+  if(file){
+    const ext = file.name.split('.').pop().toLowerCase();
+
+    if(!allowed.includes(ext)){
+      alert('Format file tidak didukung');
+      return;
+    }
+  }
+
+const mulai = document.getElementById('tanggalMulai').value;
+const selesai = document.getElementById('tanggalSelesai').value;
+
+if(selesai < mulai){
+  alert('Tanggal selesai tidak boleh lebih kecil dari tanggal mulai');
+  return;
+}
+
+ const data = {
+  nama:document.getElementById('nama').value,
+  divisi:document.getElementById('divisi').value,
+  training:document.getElementById('training').value,
+  tanggalMulai:document.getElementById('tanggalMulai').value,
+  tanggalSelesai:document.getElementById('tanggalSelesai').value,
+  vendor:document.getElementById('vendor').value,
+  lokasi:document.getElementById('lokasi').value,
+  progress:document.getElementById('progress').value,
+  tnf:document.getElementById('tnf').value,
+  upd:document.getElementById('upd').value,
+  note:document.getElementById('note').value,
+  fileName:file ? file.name : ''
+};
+
+// =========================
+// AUTO ADD MASTER DATABASE
+// =========================
+
+if(
+  data.training &&
+  !masterData.training.some(
+    item => item.toLowerCase() === data.training.toLowerCase()
+  )
+){
+  masterData.training.push(data.training);
+}
+
+if(
+  data.vendor &&
+  !masterData.vendor.some(
+    item => item.toLowerCase() === data.vendor.toLowerCase()
+  )
+){
+  masterData.vendor.push(data.vendor);
+}
+
+if(
+  data.lokasi &&
+  !masterData.lokasi.some(
+    item => item.toLowerCase() === data.lokasi.toLowerCase()
+  )
+){
+  masterData.lokasi.push(data.lokasi);
+}
+
+// refresh dropdown
+renderMasterOptions();
+
+  if(editIndex !== null){
+    transactions[editIndex] = data;
+    showToast('Data berhasil diupdate');
+  }else{
+    transactions.push(data);
+    showToast('Data berhasil disimpan');
+  }
+
+  saveLocal();
+  renderTable();
+  closeTransactionModal();
+});
+
+function clearAllData(){
+
+  const confirmDelete = confirm(
+    'Apakah yakin ingin menghapus seluruh data transaksi?'
+  );
+
+  if(!confirmDelete) return;
+
+  // hapus semua transaksi
+  transactions = [];
+
+  // reset halaman
+  currentPage = 1;
+
+  // simpan local storage
+  saveLocal();
+
+  // refresh table
+  renderTable();
+
+  // toast
+  showToast('Semua data berhasil dihapus');
+}
+
+function toggleFilter(){
+
+  const section = document.getElementById('filterSection');
+  const btn = document.getElementById('filterToggleBtn');
+
+  if(section.style.display === 'none'){
+
+    section.style.display = 'block';
+
+    btn.innerHTML = `
+      <i class="fa-solid fa-chevron-up"></i>
+      Hide
+    `;
+
+  }else{
+
+    section.style.display = 'none';
+
+    btn.innerHTML = `
+      <i class="fa-solid fa-chevron-down"></i>
+      Show
+    `;
+  }
+}
+
+initDivisions();
+renderMasterOptions();
+renderTable();
+</script>
+
+</body>
+</html>
