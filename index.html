@@ -1,658 +1,624 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Learning Tracker — KSEI</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Training Transaction Tracker</title>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
-  <style>
-    /* =========================================================
-       DESIGN TOKENS
-       ========================================================= */
-    :root {
-      --bg: #f1f5f9;
-      --bg-gradient: linear-gradient(135deg, #eef2ff 0%, #f1f5f9 50%, #ecfeff 100%);
-      --card: #ffffff;
-      --card-soft: #f8fafc;
-      --text: #0f172a;
-      --muted: #64748b;
-      --primary: #2563eb;
-      --primary-soft: #dbeafe;
-      --primary-hover: #1d4ed8;
-      --danger: #ef4444;
-      --danger-soft: #fee2e2;
-      --success: #10b981;
-      --success-soft: #d1fae5;
-      --warning: #f59e0b;
-      --warning-soft: #fef3c7;
-      --info: #06b6d4;
-      --border: #e2e8f0;
-      --shadow-sm: 0 1px 2px rgba(15, 23, 42, .06);
-      --shadow: 0 10px 30px rgba(15, 23, 42, .08);
-      --shadow-lg: 0 20px 50px rgba(15, 23, 42, .12);
-      --radius: 14px;
-      --radius-lg: 20px;
-    }
+<style>
+:root{
+  --bg:#f4f7fb;
+  --card:#ffffff;
+  --text:#1f2937;
+  --muted:#6b7280;
+  --primary:#2563eb;
+  --primary-hover:#1d4ed8;
+  --danger:#ef4444;
+  --success:#10b981;
+  --warning:#f59e0b;
+  --border:#e5e7eb;
+  --shadow:0 10px 25px rgba(0,0,0,.08);
+}
 
-    body.dark {
-      --bg: #0b1220;
-      --bg-gradient: linear-gradient(135deg, #0b1220 0%, #111827 50%, #0f172a 100%);
-      --card: #111827;
-      --card-soft: #1f2937;
-      --text: #f1f5f9;
-      --muted: #94a3b8;
-      --primary-soft: #1e3a8a;
-      --danger-soft: #7f1d1d;
-      --success-soft: #064e3b;
-      --warning-soft: #78350f;
-      --border: #334155;
-      --shadow: 0 10px 30px rgba(0, 0, 0, .45);
-      --shadow-lg: 0 20px 50px rgba(0, 0, 0, .6);
-    }
+body.dark{
+  --bg:#111827;
+  --card:#1f2937;
+  --text:#f9fafb;
+  --muted:#9ca3af;
+  --border:#374151;
+  --shadow:0 10px 25px rgba(0,0,0,.35);
+}
 
-    /* =========================================================
-       RESET + BASE
-       ========================================================= */
-    *,
-    *::before,
-    *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
 
-    html, body { height: 100%; }
+body{
+  font-family:'Inter',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  transition:.3s;
+}
 
-    body {
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      background: var(--bg-gradient);
-      color: var(--text);
-      min-height: 100vh;
-      transition: background .3s, color .3s;
-      -webkit-font-smoothing: antialiased;
-    }
+.container{
+  width:min(1500px,95%);
+  margin:auto;
+  padding:24px 0 50px;
+}
 
-    button, input, select, textarea { font-family: inherit; color: inherit; }
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+  flex-wrap:wrap;
+  margin-bottom:24px;
+}
 
-    /* =========================================================
-       LAYOUT
-       ========================================================= */
-    .container { width: min(1500px, 95%); margin: auto; padding: 28px 0 60px; }
+.title h1{
+  font-size:28px;
+  font-weight:700;
+}
 
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-      flex-wrap: wrap;
-      margin-bottom: 28px;
-    }
+.title p{
+  color:var(--muted);
+  margin-top:5px;
+}
 
-    .title h1 {
-      font-size: 28px;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
+.btn-group{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+}
 
-    .title h1 .logo-badge {
-      width: 44px; height: 44px;
-      display: inline-flex; align-items: center; justify-content: center;
-      background: linear-gradient(135deg, var(--primary), #7c3aed);
-      color: #fff;
-      border-radius: 12px;
-      box-shadow: var(--shadow);
-    }
+button,
+input,
+select,
+textarea{
+  font-family:inherit;
+}
 
-    .title p { color: var(--muted); margin-top: 6px; font-size: 14px; }
+.btn{
+  border:none;
+  padding:12px 16px;
+  border-radius:12px;
+  cursor:pointer;
+  font-weight:600;
+  transition:.2s;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
 
-    .btn-group { display: flex; flex-wrap: wrap; gap: 10px; }
+.btn-primary{
+  background:var(--primary);
+  color:#fff;
+}
 
-    /* =========================================================
-       BUTTONS
-       ========================================================= */
-    .btn {
-      border: none;
-      padding: 11px 16px;
-      border-radius: 12px;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 14px;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      transition: transform .15s, box-shadow .2s, background .2s;
-      box-shadow: var(--shadow-sm);
-    }
-    .btn:hover { transform: translateY(-1px); box-shadow: var(--shadow); }
-    .btn:active { transform: translateY(0); }
+.btn-primary:hover{
+  background:var(--primary-hover);
+}
 
-    .btn-primary   { background: var(--primary); color: #fff; }
-    .btn-primary:hover { background: var(--primary-hover); }
-    .btn-secondary { background: var(--card); color: var(--text); border: 1px solid var(--border); }
-    .btn-danger    { background: var(--danger); color: #fff; }
-    .btn-success   { background: var(--success); color: #fff; }
-    .btn-ghost     { background: transparent; color: var(--muted); box-shadow: none; }
-    .btn-ghost:hover { background: var(--card-soft); color: var(--text); }
-    .btn-icon      { padding: 11px 13px; }
+.btn-secondary{
+  background:#e5e7eb;
+  color:#111827;
+}
 
-    /* =========================================================
-       CARDS / STATS
-       ========================================================= */
-    .card {
-      background: var(--card);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow);
-      padding: 22px;
-      margin-bottom: 24px;
-      border: 1px solid var(--border);
-    }
+.btn-danger{
+  background:var(--danger);
+  color:#fff;
+}
 
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-      gap: 16px;
-      margin-bottom: 24px;
-    }
+.btn-success{
+  background:var(--success);
+  color:#fff;
+}
 
-    .stat-box {
-      background: var(--card);
-      border-radius: var(--radius-lg);
-      padding: 20px;
-      box-shadow: var(--shadow);
-      border: 1px solid var(--border);
-      position: relative;
-      overflow: hidden;
-    }
-    .stat-box::after {
-      content: ""; position: absolute; right: -20px; top: -20px;
-      width: 90px; height: 90px; border-radius: 50%;
-      background: var(--accent-color, var(--primary-soft));
-      opacity: .35;
-    }
-    .stat-box h3 {
-      color: var(--muted);
-      font-size: 13px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: .04em;
-      margin-bottom: 10px;
-      display: flex; align-items: center; gap: 8px;
-    }
-    .stat-box p { font-size: 30px; font-weight: 800; letter-spacing: -0.02em; }
-    .stat-box small { display: block; color: var(--muted); margin-top: 4px; font-size: 12px; }
+.card{
+  background:var(--card);
+  border-radius:20px;
+  box-shadow:var(--shadow);
+  padding:20px;
+  margin-bottom:24px;
+}
 
-    /* =========================================================
-       FORMS
-       ========================================================= */
-    .filter-grid,
-    .form-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 16px;
-    }
+.stats{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:15px;
+  margin-bottom:24px;
+}
 
-    .input-group { display: flex; flex-direction: column; gap: 8px; }
-    .input-group label { font-size: 13px; font-weight: 600; color: var(--text); }
-    .input-group label .req { color: var(--danger); margin-left: 2px; }
+.stat-box{
+  background:var(--card);
+  border-radius:20px;
+  padding:20px;
+  box-shadow:var(--shadow);
+}
 
-    .input-group input,
-    .input-group select,
-    .input-group textarea {
-      border: 1px solid var(--border);
-      background: var(--card-soft);
-      color: var(--text);
-      padding: 11px 13px;
-      border-radius: 11px;
-      outline: none;
-      font-size: 14px;
-      transition: border-color .15s, box-shadow .15s, background .15s;
-    }
-    .input-group input:focus,
-    .input-group select:focus,
-    .input-group textarea:focus {
-      border-color: var(--primary);
-      background: var(--card);
-      box-shadow: 0 0 0 4px color-mix(in oklab, var(--primary) 18%, transparent);
-    }
-    .input-group textarea { resize: vertical; min-height: 100px; }
+.stat-box h3{
+  color:var(--muted);
+  font-size:14px;
+  margin-bottom:8px;
+}
 
-    .filter-actions { margin-top: 18px; display: flex; gap: 10px; flex-wrap: wrap; }
+.stat-box p{
+  font-size:30px;
+  font-weight:700;
+}
 
-    .section-head {
-      display: flex; justify-content: space-between; align-items: center;
-      cursor: pointer; margin-bottom: 0; gap: 10px;
-    }
-    .section-head h2 {
-      font-size: 17px; font-weight: 700;
-      display: flex; align-items: center; gap: 10px;
-    }
+.filter-grid,
+.form-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:16px;
+}
 
-    /* =========================================================
-       TABLE
-       ========================================================= */
-    .table-container {
-      overflow: auto;
-      border-radius: 14px;
-      border: 1px solid var(--border);
-    }
+.input-group{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
 
-    .table { width: 100%; border-collapse: collapse; min-width: 1400px; }
+.input-group label{
+  font-size:14px;
+  font-weight:600;
+}
 
-    .table th,
-    .table td {
-      padding: 13px 14px;
-      border-bottom: 1px solid var(--border);
-      text-align: left;
-      font-size: 13.5px;
-      vertical-align: middle;
-    }
+.input-group input,
+.input-group select,
+.input-group textarea{
+  border:1px solid var(--border);
+  background:transparent;
+  color:var(--text);
+  padding:12px;
+  border-radius:12px;
+  outline:none;
+}
 
-    .table th {
-      position: sticky; top: 0;
-      background: var(--card-soft);
-      z-index: 5;
-      cursor: pointer;
-      font-weight: 700;
-      color: var(--muted);
-      text-transform: uppercase;
-      font-size: 11.5px;
-      letter-spacing: .04em;
-      user-select: none;
-    }
-    .table th .sort-icon { margin-left: 6px; opacity: .4; }
-    .table th.sort-active .sort-icon { opacity: 1; color: var(--primary); }
+.input-group textarea{
+  resize:vertical;
+  min-height:100px;
+}
 
-    .table tbody tr { transition: background .15s; }
-    .table tbody tr:hover { background: color-mix(in oklab, var(--primary) 6%, transparent); }
-    .table tbody tr:nth-child(even) { background: color-mix(in oklab, var(--muted) 3%, transparent); }
-    .table tbody tr:nth-child(even):hover { background: color-mix(in oklab, var(--primary) 6%, transparent); }
+.filter-actions{
+  margin-top:18px;
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
 
-    .table td:nth-child(9),
-    .table th:nth-child(9) { text-align: center; }
+.table-container{
+  overflow:auto;
+  border-radius:16px;
+}
 
-    /* Empty state */
-    .empty-state {
-      text-align: center;
-      padding: 60px 20px;
-      color: var(--muted);
-    }
-    .empty-state i { font-size: 48px; opacity: .35; margin-bottom: 14px; }
-    .empty-state h3 { font-size: 16px; font-weight: 700; margin-bottom: 6px; color: var(--text); }
+.table{
+  width:100%;
+  border-collapse:collapse;
+  min-width:1400px;
+}
 
-    /* =========================================================
-       BADGES
-       ========================================================= */
-    .badge {
-      display: inline-flex; align-items: center; justify-content: center;
-      padding: 6px 12px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 600;
-      line-height: 1;
-      min-height: 26px;
-      white-space: nowrap;
-      gap: 5px;
-    }
-    .progress-done   { background: var(--success-soft); color: #166534; border: 1px solid #bbf7d0; }
-    .progress-reg    { background: var(--primary-soft); color: #1d4ed8; border: 1px solid #bfdbfe; }
-    .progress-check  { background: var(--warning-soft); color: #92400e; border: 1px solid #fde68a; }
-    .progress-batal  { background: var(--danger-soft);  color: #991b1b; border: 1px solid #fecaca; }
+.table th,
+.table td{
+  padding:14px;
+  border-bottom:1px solid var(--border);
+  text-align:left;
+  font-size:14px;
+}
 
-    body.dark .progress-done   { color: #86efac; border-color: #166534; }
-    body.dark .progress-reg    { color: #93c5fd; border-color: #1e40af; }
-    body.dark .progress-check  { color: #fcd34d; border-color: #92400e; }
-    body.dark .progress-batal  { color: #fca5a5; border-color: #7f1d1d; }
+.table th{
+  position:sticky;
+  top:0;
+  background:var(--card);
+  z-index:5;
+  cursor:pointer;
+}
 
-    .pill-soft {
-      display: inline-flex; align-items: center; gap: 5px;
-      padding: 4px 9px; border-radius: 999px;
-      background: var(--card-soft);
-      color: var(--muted);
-      font-size: 11.5px; font-weight: 600;
-      border: 1px solid var(--border);
-    }
+.table tr:hover{
+  background:rgba(37,99,235,.05);
+}
 
-    /* =========================================================
-       ACTION BUTTONS
-       ========================================================= */
-    .action-buttons { display: flex; gap: 6px; }
+.badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:7px 14px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:600;
+  line-height:1;
+  min-height:30px;
+  white-space:nowrap;
+}
+.table td:nth-child(9),
+.table th:nth-child(9){
+  text-align:center;
+}
+.progress-done{
+  background:#dcfce7;
+  color:#166534;
+  border:1px solid #bbf7d0;
+}
 
-    .icon-btn {
-      border: none;
-      width: 34px; height: 34px;
-      border-radius: 10px;
-      cursor: pointer;
-      display: inline-flex; align-items: center; justify-content: center;
-      transition: transform .15s, filter .15s;
-    }
-    .icon-btn:hover { transform: translateY(-1px); filter: brightness(.96); }
+.progress-reg{
+  background:#dbeafe;
+  color:#1d4ed8;
+  border:1px solid #bfdbfe;
+}
 
-    .edit-btn   { background: var(--primary-soft); color: #1d4ed8; }
-    .delete-btn { background: var(--danger-soft);  color: #991b1b; }
-    .view-btn   { background: var(--success-soft); color: #166534; }
+.progress-check{
+  background:#fef3c7;
+  color:#92400e;
+  border:1px solid #fde68a;
+}
 
-    body.dark .edit-btn   { color: #93c5fd; }
-    body.dark .delete-btn { color: #fca5a5; }
-    body.dark .view-btn   { color: #86efac; }
+.progress-batal{
+  background:#fee2e2;
+  color:#991b1b;
+  border:1px solid #fecaca;
+}
 
-    /* =========================================================
-       MODAL
-       ========================================================= */
-    .modal {
-      position: fixed; inset: 0;
-      background: rgba(15, 23, 42, .55);
-      backdrop-filter: blur(4px);
-      display: none;
-      justify-content: center; align-items: center;
-      padding: 20px;
-      z-index: 1000;
-    }
-    .modal.active { display: flex; animation: fade .2s ease; }
+.action-buttons{
+  display:flex;
+  gap:8px;
+}
 
-    @keyframes fade {
-      from { opacity: 0; transform: scale(.97); }
-      to   { opacity: 1; transform: scale(1); }
-    }
+.icon-btn{
+  border:none;
+  width:36px;
+  height:36px;
+  border-radius:10px;
+  cursor:pointer;
+}
 
-    .modal-content {
-      width: min(1100px, 100%);
-      max-height: 90vh;
-      overflow: auto;
-      background: var(--card);
-      border-radius: 22px;
-      padding: 26px;
-      box-shadow: var(--shadow-lg);
-      border: 1px solid var(--border);
-    }
+.edit-btn{
+  background:#dbeafe;
+  color:#1d4ed8;
+}
 
-    .modal-header {
-      display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 20px;
-      padding-bottom: 16px;
-      border-bottom: 1px solid var(--border);
-    }
-    .modal-header h2 {
-      font-size: 19px; font-weight: 700;
-      display: flex; align-items: center; gap: 10px;
-    }
+.delete-btn{
+  background:#fee2e2;
+  color:#991b1b;
+}
 
-    .close-btn {
-      background: var(--card-soft);
-      border: 1px solid var(--border);
-      width: 36px; height: 36px;
-      border-radius: 10px;
-      font-size: 18px;
-      cursor: pointer;
-      color: var(--text);
-      display: inline-flex; align-items: center; justify-content: center;
-      transition: background .15s, color .15s;
-    }
-    .close-btn:hover { background: var(--danger-soft); color: var(--danger); }
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.5);
+  display:none;
+  justify-content:center;
+  align-items:center;
+  padding:20px;
+  z-index:1000;
+}
 
-    .modal-actions {
-      display: flex; justify-content: flex-end; gap: 10px;
-      margin-top: 24px;
-      padding-top: 18px;
-      border-top: 1px solid var(--border);
-    }
+.modal.active{
+  display:flex;
+  animation:fade .25s ease;
+}
 
-    /* =========================================================
-       MASTER DATA
-       ========================================================= */
-    .master-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 18px;
-    }
-    .master-tools {
-      display: flex; gap: 10px; flex-wrap: wrap;
-      margin-bottom: 22px; padding-bottom: 18px;
-      border-bottom: 1px solid var(--border);
-    }
-    .master-box {
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 18px;
-      background: var(--card-soft);
-    }
-    .master-box h3 {
-      font-size: 15px; font-weight: 700;
-      display: flex; align-items: center; gap: 8px;
-    }
-    .master-add-row { display: flex; gap: 8px; margin-top: 14px; }
-    .master-add-row input {
-      flex: 1; padding: 11px 13px;
-      border-radius: 11px;
-      border: 1px solid var(--border);
-      background: var(--card);
-      color: var(--text);
-      outline: none;
-      font-size: 14px;
-    }
-    .master-add-row input:focus { border-color: var(--primary); }
+@keyframes fade{
+  from{opacity:0;transform:scale(.95)}
+  to{opacity:1;transform:scale(1)}
+}
 
-    .master-list {
-      margin-top: 14px;
-      display: flex; flex-direction: column; gap: 8px;
-      max-height: 320px; overflow: auto;
-    }
-    .master-item {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 9px 12px;
-      border-radius: 10px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      font-size: 13.5px;
-    }
+.modal-content{
+  width:min(1100px,100%);
+  max-height:90vh;
+  overflow:auto;
+  background:var(--card);
+  border-radius:24px;
+  padding:24px;
+  box-shadow:var(--shadow);
+}
 
-    /* =========================================================
-       TABLE FOOTER + PAGINATION
-       ========================================================= */
-    .table-footer {
-      margin-top: 18px;
-      display: flex; justify-content: space-between; align-items: center;
-      flex-wrap: wrap; gap: 14px;
-    }
-    .show-entries { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 14px; }
-    .show-entries select {
-      padding: 8px 12px;
-      border-radius: 10px;
-      border: 1px solid var(--border);
-      background: var(--card);
-      color: var(--text);
-      outline: none;
-    }
+.modal-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:20px;
+}
 
-    .pagination { display: flex; align-items: center; gap: 8px; }
-    .pagination .page-info { color: var(--muted); font-size: 13.5px; padding: 0 6px; }
+.close-btn{
+  background:none;
+  border:none;
+  font-size:24px;
+  cursor:pointer;
+  color:var(--text);
+}
 
-    /* =========================================================
-       TOAST
-       ========================================================= */
-    .toast {
-      position: fixed;
-      right: 24px; bottom: 24px;
-      background: var(--text);
-      color: var(--card);
-      padding: 13px 18px;
-      border-radius: 12px;
-      display: none;
-      z-index: 9999;
-      box-shadow: var(--shadow-lg);
-      align-items: center; gap: 10px;
-      font-weight: 600;
-      max-width: 360px;
-    }
-    .toast.show { display: inline-flex; animation: slideUp .25s ease; }
-    .toast.success { background: var(--success); color: #fff; }
-    .toast.error   { background: var(--danger);  color: #fff; }
-    .toast.info    { background: var(--primary); color: #fff; }
-    @keyframes slideUp {
-      from { opacity: 0; transform: translateY(10px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
+.modal-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:10px;
+  margin-top:24px;
+}
 
-    .file-link {
-      color: var(--primary);
-      text-decoration: none;
-      font-weight: 600;
-      display: inline-flex; align-items: center; gap: 5px;
-    }
-    .file-link:hover { text-decoration: underline; }
+.master-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+  gap:20px;
+}
 
-    /* =========================================================
-       RESPONSIVE
-       ========================================================= */
-    @media (max-width: 768px) {
-      .header { flex-direction: column; align-items: flex-start; }
-      .btn-group { width: 100%; }
-      .btn { flex: 1; justify-content: center; }
-      .stat-box p { font-size: 24px; }
-    }
+.master-tools{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:24px;
+  padding-bottom:20px;
+  border-bottom:1px solid var(--border);
+}
 
-    /* =========================================================
-       PRINT
-       ========================================================= */
-    @media print {
-      .header .btn-group, .card .filter-actions, .section-head button,
-      .table-footer, .action-buttons, th:last-child, td:last-child { display: none !important; }
-      body { background: #fff; }
-      .card { box-shadow: none; border: 1px solid #ddd; }
-    }
-  </style>
+.master-box{
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:18px;
+}
+
+.master-list{
+  margin-top:15px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  max-height:300px;
+  overflow:auto;
+}
+
+.master-item{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:10px;
+  border-radius:12px;
+  background:rgba(0,0,0,.04);
+}
+
+.pagination{
+  display:flex;
+  justify-content:flex-end;
+  align-items:center;
+  gap:10px;
+}
+
+.toast{
+  position:fixed;
+  right:20px;
+  bottom:20px;
+  background:#111827;
+  color:#fff;
+  padding:14px 18px;
+  border-radius:12px;
+  display:none;
+  z-index:9999;
+}
+
+.toast.show{
+  display:block;
+  animation:fade .3s ease;
+}
+
+.file-link{
+  color:var(--primary);
+  text-decoration:none;
+  font-weight:600;
+}
+
+@media(max-width:768px){
+  .header{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+
+  .btn-group{
+    width:100%;
+  }
+
+  .btn{
+    width:100%;
+    justify-content:center;
+  }
+}
+
+.table-footer{
+  margin-top:20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:15px;
+}
+
+.show-entries{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.show-entries select{
+  padding:10px 14px;
+  border-radius:10px;
+  border:1px solid var(--border);
+  background:var(--card);
+  color:var(--text);
+}
+
+.pagination{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+</style>
 </head>
 <body>
 
 <div class="container">
 
-  <!-- ============== HEADER ============== -->
-  <header class="header">
+  <div class="header">
     <div class="title">
-      <h1>
-        <span class="logo-badge"><i class="fa-solid fa-graduation-cap"></i></span>
-        Learning Tracker
-      </h1>
+      <h1><i class="fa-solid fa-graduation-cap"></i> Learning Tracker</h1>
       <p>Kustodian Sentral Efek Indonesia</p>
     </div>
 
     <div class="btn-group">
-      <button class="btn btn-primary" onclick="openTransactionModal()" title="Tambah data baru (Ctrl+N)">
-        <i class="fa-solid fa-plus"></i> Tambah Data
+      <button class="btn btn-primary" onclick="openTransactionModal()">
+        <i class="fa-solid fa-plus"></i>
+        Tambah Data
       </button>
-      <button class="btn btn-secondary" onclick="openMasterModal()" title="Kelola master database">
-        <i class="fa-solid fa-database"></i> Database
+<button class="btn btn-success"
+onclick="loadDataFromSheet()">
+<i class="fa-solid fa-rotate"></i>
+Auto Sync
+</button>
+<button
+  class="btn btn-success"
+  onclick="saveAllToCloud()">
+  <i class="fa-solid fa-cloud-arrow-up"></i>
+  Save To Cloud
+</button>
+      <button class="btn btn-secondary" onclick="openMasterModal()">
+        <i class="fa-solid fa-database"></i>
+        Database
       </button>
-      <button class="btn btn-secondary btn-icon" onclick="window.print()" title="Cetak halaman">
-        <i class="fa-solid fa-print"></i>
-      </button>
-      <button class="btn btn-secondary btn-icon" id="darkModeBtn" onclick="toggleDarkMode()" title="Ganti tema">
+
+      <button class="btn btn-secondary" onclick="toggleDarkMode()">
         <i class="fa-solid fa-moon"></i>
       </button>
+
       <input type="file" id="importFile" hidden accept=".csv">
-    </div>
-  </header>
-
-  <!-- ============== STATS ============== -->
-  <section class="stats">
-    <div class="stat-box" style="--accent-color: var(--primary-soft)">
-      <h3><i class="fa-solid fa-layer-group"></i> Total Data</h3>
-      <p id="totalData">0</p>
-      <small id="totalDataInfo">Semua transaksi</small>
-    </div>
-    <div class="stat-box" style="--accent-color: var(--success-soft)">
-      <h3><i class="fa-solid fa-circle-check"></i> Done</h3>
-      <p id="doneData">0</p>
-      <small id="doneDataInfo">0% selesai</small>
-    </div>
-    <div class="stat-box" style="--accent-color: var(--warning-soft)">
-      <h3><i class="fa-solid fa-clipboard-list"></i> Registrasi</h3>
-      <p id="regData">0</p>
-      <small id="regDataInfo">0% pending</small>
-    </div>
-    <div class="stat-box" style="--accent-color: var(--danger-soft)">
-      <h3><i class="fa-solid fa-circle-xmark"></i> Batal</h3>
-      <p id="cancelData">0</p>
-      <small id="cancelDataInfo">0% dibatalkan</small>
-    </div>
-  </section>
-
-  <!-- ============== FILTER ============== -->
-  <div class="card">
-    <div class="section-head" onclick="toggleFilter()">
-      <h2><i class="fa-solid fa-filter"></i> Data Filter</h2>
-      <button type="button" id="filterToggleBtn" class="btn btn-secondary" style="padding:8px 12px">
-        <i class="fa-solid fa-chevron-down"></i> <span>Show</span>
-      </button>
-    </div>
-
-    <div id="filterSection" style="display:none; margin-top: 18px;">
-      <div class="filter-grid">
-        <div class="input-group">
-          <label>Nama / Pelatihan</label>
-          <input type="text" id="filterNama" placeholder="Cari nama atau pelatihan..." oninput="applyFilter()">
-        </div>
-        <div class="input-group">
-          <label>Divisi</label>
-          <select id="filterDivisi" onchange="applyFilter()">
-            <option value="">Semua Divisi</option>
-          </select>
-        </div>
-        <div class="input-group">
-          <label>Nama Pelatihan</label>
-          <select id="filterTraining" onchange="applyFilter()">
-            <option value="">Semua Pelatihan</option>
-          </select>
-        </div>
-        <div class="input-group">
-          <label>Dari Tanggal</label>
-          <input type="date" id="filterStartDate" onchange="applyFilter()">
-        </div>
-        <div class="input-group">
-          <label>Sampai Tanggal</label>
-          <input type="date" id="filterEndDate" onchange="applyFilter()">
-        </div>
-        <div class="input-group">
-          <label>Progress</label>
-          <select id="filterProgress" onchange="applyFilter()">
-            <option value="">Semua Progress</option>
-            <option>Progress Check</option>
-            <option>Registrasi</option>
-            <option>Done</option>
-            <option>Batal</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="filter-actions">
-        <button class="btn btn-primary" onclick="applyFilter()">
-          <i class="fa-solid fa-magnifying-glass"></i> Search
-        </button>
-        <button class="btn btn-secondary" onclick="resetFilter()">
-          <i class="fa-solid fa-rotate"></i> Reset Filter
-        </button>
-      </div>
     </div>
   </div>
 
-  <!-- ============== TABLE ============== -->
+  <div class="stats">
+    <div class="stat-box">
+      <h3>Total Data</h3>
+      <p id="totalData">0</p>
+    </div>
+
+    <div class="stat-box">
+      <h3>Done</h3>
+      <p id="doneData">0</p>
+    </div>
+
+    <div class="stat-box">
+      <h3>Registrasi</h3>
+      <p id="regData">0</p>
+    </div>
+
+    <div class="stat-box">
+      <h3>Batal</h3>
+      <p id="cancelData">0</p>
+    </div>
+  </div>
+
+<div class="card">
+
+  <div style="
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    cursor:pointer;
+    margin-bottom:18px;
+  "
+  onclick="toggleFilter()">
+
+    <h2>
+      <i class="fa-solid fa-filter"></i>
+      Data Filter
+    </h2>
+
+    <button
+      type="button"
+      id="filterToggleBtn"
+      class="btn btn-secondary"
+      style="padding:8px 12px"
+    >
+      <i class="fa-solid fa-chevron-down"></i>
+      Show
+    </button>
+
+  </div>
+
+  <div id="filterSection" style="display:none;">
+    
+    <div class="filter-grid">
+      <div class="input-group">
+        <label>Nama</label>
+        <input type="text" id="filterNama" placeholder="Cari nama...">
+      </div>
+
+      <div class="input-group">
+        <label>Divisi</label>
+        <select id="filterDivisi">
+          <option value="">Semua Divisi</option>
+        </select>
+      </div>
+
+      <div class="input-group">
+        <label>Nama Pelatihan</label>
+        <select id="filterTraining">
+          <option value="">Semua Pelatihan</option>
+        </select>
+      </div>
+
+      <div class="input-group">
+      <label>Tanggal Mulai</label>
+      <input type="date" id="filterStartDate">
+      </div>
+
+      <div class="input-group">
+      <label>Tanggal Selesai</label>
+      <input type="date" id="filterEndDate">
+      </div>
+
+      <div class="input-group">
+        <label>Progress</label>
+        <select id="filterProgress">
+          <option value="">Semua Progress</option>
+          <option>Progress Check</option>
+          <option>Registrasi</option>
+          <option>Done</option>
+          <option>Batal</option>
+        </select>
+      </div>
+    
+</div>
+    <div class="filter-actions">
+      <button class="btn btn-primary" onclick="applyFilter()">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        Search
+      </button>
+
+      <button class="btn btn-secondary" onclick="resetFilter()">
+        <i class="fa-solid fa-rotate"></i>
+        Reset Filter
+      </button>
+    </div>
+
+  </div>
+</div>
+
   <div class="card">
     <div class="table-container">
-      <table class="table" id="dataTable">
+      <table class="table">
         <thead>
           <tr>
             <th>No</th>
-            <th data-sort="nama">Nama <i class="fa-solid fa-sort sort-icon"></i></th>
-            <th data-sort="divisi">Divisi <i class="fa-solid fa-sort sort-icon"></i></th>
-            <th data-sort="training">Nama Pelatihan <i class="fa-solid fa-sort sort-icon"></i></th>
-            <th data-sort="tanggalMulai">Tanggal Mulai <i class="fa-solid fa-sort sort-icon"></i></th>
-            <th data-sort="tanggalSelesai">Tanggal Selesai <i class="fa-solid fa-sort sort-icon"></i></th>
-            <th data-sort="vendor">Vendor <i class="fa-solid fa-sort sort-icon"></i></th>
-            <th data-sort="lokasi">Lokasi <i class="fa-solid fa-sort sort-icon"></i></th>
-            <th data-sort="progress">Progress <i class="fa-solid fa-sort sort-icon"></i></th>
+            <th>Nama</th>
+            <th>Divisi</th>
+            <th>Nama Pelatihan</th>
+            <th>Tanggal Mulai</th>
+            <th>Tanggal Selesai</th>
+            <th>Vendor</th>
+            <th>Lokasi</th>
+            <th>Progress</th>
             <th>TNF</th>
             <th>UPD</th>
             <th>Note</th>
@@ -660,78 +626,93 @@
             <th>Action</th>
           </tr>
         </thead>
+
         <tbody id="tableBody"></tbody>
       </table>
     </div>
 
-    <div class="table-footer">
-      <div class="show-entries">
-        <label>Show</label>
-        <select id="rowsPerPageSelect" onchange="changeRowsPerPage()">
-          <option value="10">10</option>
-          <option value="25">25</option>
-          <option value="50">50</option>
-          <option value="100">100</option>
-        </select>
-        <span id="entriesInfo">entries</span>
-      </div>
+<div class="table-footer">
 
-      <div class="pagination">
-        <button class="btn btn-secondary" onclick="prevPage()"><i class="fa-solid fa-chevron-left"></i> Prev</button>
-        <span class="page-info" id="pageInfo">Page 1 of 1</span>
-        <button class="btn btn-secondary" onclick="nextPage()">Next <i class="fa-solid fa-chevron-right"></i></button>
-      </div>
-    </div>
+  <div class="show-entries">
+    <label>Show</label>
+
+    <select id="rowsPerPageSelect"
+      onchange="changeRowsPerPage()">
+      <option value="10">10</option>
+      <option value="25">25</option>
+      <option value="50">50</option>
+      <option value="100">100</option>
+    </select>
+
+    <span>entries</span>
   </div>
+
+  <div class="pagination">
+    <button class="btn btn-secondary" onclick="prevPage()">Prev</button>
+
+    <span id="pageInfo">Page 1</span>
+
+    <button class="btn btn-secondary" onclick="nextPage()">Next</button>
+  </div>
+
 </div>
 
-<!-- ============== TRANSACTION MODAL ============== -->
 <div class="modal" id="transactionModal">
   <div class="modal-content">
+
     <div class="modal-header">
-      <h2><i class="fa-solid fa-pen-to-square"></i> <span id="modalTitle">Tambah Transaksi</span></h2>
-      <button class="close-btn" onclick="closeTransactionModal()" aria-label="Close">&times;</button>
+      <h2>Tambah Transaksi</h2>
+      <button class="close-btn" onclick="closeTransactionModal()">&times;</button>
     </div>
 
     <form id="transactionForm">
       <div class="form-grid">
+
         <div class="input-group">
           <label>No</label>
           <input type="text" id="transactionNo" readonly>
         </div>
+
         <div class="input-group">
-          <label>Nama <span class="req">*</span></label>
-          <input type="text" id="nama" required placeholder="Nama peserta">
+          <label>Nama</label>
+          <input type="text" id="nama" required>
         </div>
+
         <div class="input-group">
-          <label>Divisi <span class="req">*</span></label>
+          <label>Divisi</label>
           <select id="divisi" required></select>
         </div>
+
         <div class="input-group">
-          <label>Nama Pelatihan <span class="req">*</span></label>
-          <input list="trainingList" id="training" required placeholder="Pilih atau ketik baru">
+          <label>Nama Pelatihan</label>
+          <input list="trainingList" id="training" required>
           <datalist id="trainingList"></datalist>
         </div>
+
         <div class="input-group">
-          <label>Tanggal Mulai <span class="req">*</span></label>
-          <input type="date" id="tanggalMulai" required>
+        <label>Tanggal Mulai</label>
+        <input type="date" id="tanggalMulai" required>
         </div>
+
         <div class="input-group">
-          <label>Tanggal Selesai <span class="req">*</span></label>
-          <input type="date" id="tanggalSelesai" required>
-        </div>
+       <label>Tanggal Selesai</label>
+       <input type="date" id="tanggalSelesai" required>
+       </div>
+
         <div class="input-group">
-          <label>Vendor <span class="req">*</span></label>
-          <input list="vendorList" id="vendor" required placeholder="Pilih atau ketik baru">
+          <label>Vendor</label>
+          <input list="vendorList" id="vendor" required>
           <datalist id="vendorList"></datalist>
         </div>
+
         <div class="input-group">
-          <label>Lokasi <span class="req">*</span></label>
-          <input list="lokasiList" id="lokasi" required placeholder="Pilih atau ketik baru">
+          <label>Lokasi</label>
+          <input list="lokasiList" id="lokasi" required>
           <datalist id="lokasiList"></datalist>
         </div>
+
         <div class="input-group">
-          <label>Progress <span class="req">*</span></label>
+          <label>Progress</label>
           <select id="progress" required>
             <option value="">Pilih</option>
             <option>Progress Check</option>
@@ -740,202 +721,255 @@
             <option>Batal</option>
           </select>
         </div>
+
         <div class="input-group">
-          <label>TNF <span class="req">*</span></label>
+          <label>TNF</label>
           <select id="tnf" required>
             <option value="">Pilih</option>
             <option>Sent</option>
             <option>Not Yet</option>
           </select>
         </div>
+
         <div class="input-group">
-          <label>UPD <span class="req">*</span></label>
+          <label>UPD</label>
           <select id="upd" required>
             <option value="">Pilih</option>
             <option>Yes</option>
             <option>No</option>
           </select>
         </div>
+
         <div class="input-group" style="grid-column:1/-1">
           <label>Note</label>
-          <textarea id="note" placeholder="Catatan opsional..."></textarea>
+          <textarea id="note"></textarea>
         </div>
+
         <div class="input-group" style="grid-column:1/-1">
-          <label>Upload Data (PDF, Excel, Word, Gambar — max 5MB)</label>
+          <label>Upload Data</label>
           <input type="file" id="fileData" accept=".pdf,.xlsx,.xls,.doc,.docx,.png,.jpg,.jpeg">
         </div>
+
       </div>
 
       <div class="modal-actions">
-        <button type="button" class="btn btn-secondary" onclick="closeTransactionModal()">
-          <i class="fa-solid fa-xmark"></i> Cancel
-        </button>
-        <button type="submit" class="btn btn-primary">
-          <i class="fa-solid fa-floppy-disk"></i> Save
-        </button>
+        <button type="button" class="btn btn-secondary" onclick="closeTransactionModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save</button>
       </div>
     </form>
+
   </div>
 </div>
 
-<!-- ============== MASTER MODAL ============== -->
 <div class="modal" id="masterModal">
   <div class="modal-content">
+
     <div class="modal-header">
-      <h2><i class="fa-solid fa-database"></i> Master Database</h2>
-      <button class="close-btn" onclick="closeMasterModal()" aria-label="Close">&times;</button>
+      <h2>Master Database</h2>
+      <button class="close-btn" onclick="closeMasterModal()">&times;</button>
     </div>
 
-    <div class="master-tools">
-      <button class="btn btn-success" onclick="exportData()">
-        <i class="fa-solid fa-file-export"></i> Export Excel
-      </button>
-      <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">
-        <i class="fa-solid fa-file-import"></i> Import Data
-      </button>
-      <button class="btn btn-secondary" onclick="backupJSON()">
-        <i class="fa-solid fa-cloud-arrow-down"></i> Backup (JSON)
-      </button>
-      <button class="btn btn-secondary" onclick="document.getElementById('restoreFile').click()">
-        <i class="fa-solid fa-cloud-arrow-up"></i> Restore
-      </button>
-      <input type="file" id="restoreFile" hidden accept=".json">
-      <button class="btn btn-danger" onclick="clearAllData()">
-        <i class="fa-solid fa-trash"></i> Clear Data
-      </button>
-    </div>
+<div class="master-tools"
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:20px;
+">
+
+  <button class="btn btn-success" onclick="exportData()">
+    <i class="fa-solid fa-file-export"></i>
+    Export Excel
+  </button>
+
+  <button class="btn btn-secondary"
+    onclick="document.getElementById('importFile').click()">
+    <i class="fa-solid fa-file-import"></i>
+    Import Data
+  </button>
+
+  <button class="btn btn-danger" onclick="clearAllData()">
+    <i class="fa-solid fa-trash"></i>
+    Clear Data
+  </button>
+
+</div>
 
     <div class="master-grid">
+
       <div class="master-box">
-        <h3><i class="fa-solid fa-chalkboard-user"></i> Nama Pelatihan</h3>
-        <div class="master-add-row">
-          <input type="text" id="newTraining" placeholder="Tambah pelatihan">
+        <h3>Nama Pelatihan</h3>
+
+        <div style="display:flex;gap:10px;margin-top:15px">
+          <input type="text" id="newTraining" placeholder="Tambah pelatihan" style="flex:1;padding:12px;border-radius:12px;border:1px solid var(--border)">
           <button class="btn btn-primary" onclick="addMaster('training')">Tambah</button>
         </div>
+
         <div class="master-list" id="trainingMasterList"></div>
       </div>
 
       <div class="master-box">
-        <h3><i class="fa-solid fa-building"></i> Vendor</h3>
-        <div class="master-add-row">
-          <input type="text" id="newVendor" placeholder="Tambah vendor">
+        <h3>Vendor</h3>
+
+        <div style="display:flex;gap:10px;margin-top:15px">
+          <input type="text" id="newVendor" placeholder="Tambah vendor" style="flex:1;padding:12px;border-radius:12px;border:1px solid var(--border)">
           <button class="btn btn-primary" onclick="addMaster('vendor')">Tambah</button>
         </div>
+
         <div class="master-list" id="vendorMasterList"></div>
       </div>
 
       <div class="master-box">
-        <h3><i class="fa-solid fa-location-dot"></i> Lokasi</h3>
-        <div class="master-add-row">
-          <input type="text" id="newLokasi" placeholder="Tambah lokasi">
+        <h3>Lokasi</h3>
+
+        <div style="display:flex;gap:10px;margin-top:15px">
+          <input type="text" id="newLokasi" placeholder="Tambah lokasi" style="flex:1;padding:12px;border-radius:12px;border:1px solid var(--border)">
           <button class="btn btn-primary" onclick="addMaster('lokasi')">Tambah</button>
         </div>
+
         <div class="master-list" id="lokasiMasterList"></div>
       </div>
+
     </div>
+
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-/* =========================================================
-   STATE
-   ========================================================= */
+
 const divisions = [
-  'SKE','SMR','SPI','JKU','PTA','PWS','PSA','TIF',
-  'PIN','PSI','PPU','HIN','HKM','PSU','KEU'
+'SKE','SMR','SPI','JKU','PTA','PWS','PSA','TIF','PIN','PSI','PPU','HIN','HKM','PSU','KEU'
 ];
 
+const API_URL =
+'https://script.google.com/macros/s/AKfycbyrxHE7ZI5WeOh_GpL7l8u0Vrqzs0LDcprYH80sZEfg1QssFgn_2C0vvyBiJUsmrgaT/exec';
+
 let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+
 let masterData = JSON.parse(localStorage.getItem('masterData')) || {
-  training: ['Leadership Training'],
-  vendor:   ['Internal Vendor'],
-  lokasi:   ['Jakarta']
+  training:['Leadership Training'],
+  vendor:['Internal Vendor'],
+  lokasi:['Jakarta']
 };
 
-let currentPage   = 1;
-let rowsPerPage   = 10;
-let editIndex     = null;
-let filteredData  = null; // null = no active filter
-let sortKey       = null;
-let sortDir       = 'asc';
+let currentPage = 1;
+let rowsPerPage = 10;
+let editIndex = null;
+let currentId = "";
 
-/* =========================================================
-   STORAGE
-   ========================================================= */
-function saveLocal() {
+let syncPassword = "";
+
+async function loadDataFromSheet(){
+
+  if(!syncPassword){
+
+    syncPassword = prompt(
+      "Masukkan Password Sinkronisasi"
+    );
+
+    if(!syncPassword){
+      return;
+    }
+  }
+
+  try{
+
+    console.log("Mengambil data...");
+
+    const response = await fetch(
+      API_URL +
+      "?password=" +
+      encodeURIComponent(syncPassword)
+    );
+
+    const data = await response.json();
+
+    console.log(data);
+
+    if(data.success === false){
+
+      alert(data.message);
+
+      syncPassword = "";
+
+      return;
+    }
+
+    transactions = data;
+
+    renderTable();
+
+    showToast("Sync berhasil");
+
+  }catch(error){
+
+    console.error(error);
+
+    alert(error.message);
+
+  }
+
+}
+
+function saveLocal(){
   localStorage.setItem('transactions', JSON.stringify(transactions));
-  localStorage.setItem('masterData',  JSON.stringify(masterData));
+  localStorage.setItem('masterData', JSON.stringify(masterData));
 }
 
-/* =========================================================
-   TOAST (with type)
-   ========================================================= */
-function showToast(message, type = 'success') {
+function showToast(message){
   const toast = document.getElementById('toast');
-  const icon = {
-    success: 'fa-circle-check',
-    error:   'fa-circle-exclamation',
-    info:    'fa-circle-info'
-  }[type] || 'fa-circle-check';
+  toast.innerText = message;
+  toast.classList.add('show');
 
-  toast.className = 'toast show ' + type;
-  toast.innerHTML = `<i class="fa-solid ${icon}"></i> ${message}`;
-
-  clearTimeout(toast._t);
-  toast._t = setTimeout(() => toast.classList.remove('show'), 2600);
+  setTimeout(()=>{
+    toast.classList.remove('show');
+  },2500);
 }
 
-/* =========================================================
-   INIT DROPDOWNS
-   ========================================================= */
-function initDivisions() {
+function initDivisions(){
   const divisi = document.getElementById('divisi');
   const filterDivisi = document.getElementById('filterDivisi');
-  divisions.forEach(item => {
+
+  divisions.forEach(item=>{
     divisi.innerHTML += `<option>${item}</option>`;
     filterDivisi.innerHTML += `<option>${item}</option>`;
   });
 }
 
-function renderMasterOptions() {
-  document.getElementById('trainingList').innerHTML =
-    masterData.training.map(i => `<option value="${escapeHTML(i)}">`).join('');
-  document.getElementById('vendorList').innerHTML =
-    masterData.vendor.map(i => `<option value="${escapeHTML(i)}">`).join('');
-  document.getElementById('lokasiList').innerHTML =
-    masterData.lokasi.map(i => `<option value="${escapeHTML(i)}">`).join('');
+function renderMasterOptions(){
+  document.getElementById('trainingList').innerHTML = masterData.training.map(item=>`<option value="${item}">`).join('');
+  document.getElementById('vendorList').innerHTML = masterData.vendor.map(item=>`<option value="${item}">`).join('');
+  document.getElementById('lokasiList').innerHTML = masterData.lokasi.map(item=>`<option value="${item}">`).join('');
 
   const filterTraining = document.getElementById('filterTraining');
   filterTraining.innerHTML = '<option value="">Semua Pelatihan</option>';
-  masterData.training.forEach(i => {
-    filterTraining.innerHTML += `<option>${escapeHTML(i)}</option>`;
+
+  masterData.training.forEach(item=>{
+    filterTraining.innerHTML += `<option>${item}</option>`;
   });
 
   renderMasterList();
 }
 
-function renderMasterList() {
-  renderSingleMaster('training', 'trainingMasterList');
-  renderSingleMaster('vendor',   'vendorMasterList');
-  renderSingleMaster('lokasi',   'lokasiMasterList');
+function renderMasterList(){
+  renderSingleMaster('training','trainingMasterList');
+  renderSingleMaster('vendor','vendorMasterList');
+  renderSingleMaster('lokasi','lokasiMasterList');
 }
 
-function renderSingleMaster(type, elementId) {
+function renderSingleMaster(type, elementId){
   const el = document.getElementById(elementId);
-  if (!masterData[type].length) {
-    el.innerHTML = `<div class="empty-state" style="padding:20px"><i class="fa-solid fa-inbox"></i><h3>Belum ada data</h3></div>`;
-    return;
-  }
-  el.innerHTML = masterData[type].map((item, index) => `
+
+  el.innerHTML = masterData[type].map((item,index)=>`
     <div class="master-item">
-      <span>${escapeHTML(item)}</span>
-      <div style="display:flex;gap:6px">
-        <button class="icon-btn edit-btn" onclick="editMaster('${type}',${index})" title="Edit">
+      <span>${item}</span>
+
+      <div style="display:flex;gap:8px">
+        <button class="icon-btn edit-btn" onclick="editMaster('${type}',${index})">
           <i class="fa-solid fa-pen"></i>
         </button>
-        <button class="icon-btn delete-btn" onclick="deleteMaster('${type}',${index})" title="Hapus">
+
+        <button class="icon-btn delete-btn" onclick="deleteMaster('${type}',${index})">
           <i class="fa-solid fa-trash"></i>
         </button>
       </div>
@@ -943,542 +977,574 @@ function renderSingleMaster(type, elementId) {
   `).join('');
 }
 
-/* =========================================================
-   MASTER CRUD
-   ========================================================= */
-function addMaster(type) {
-  const inputMap = { training: 'newTraining', vendor: 'newVendor', lokasi: 'newLokasi' };
+function addMaster(type){
+  const inputMap = {
+    training:'newTraining',
+    vendor:'newVendor',
+    lokasi:'newLokasi'
+  };
+
   const input = document.getElementById(inputMap[type]);
-  const value = input.value.trim();
-  if (!value) return showToast('Input tidak boleh kosong', 'error');
 
-  const exists = masterData[type].some(i => i.toLowerCase() === value.toLowerCase());
-  if (exists) return showToast('Data sudah ada', 'error');
+  if(!input.value.trim()) return;
 
-  masterData[type].push(value);
-  input.value = '';
+  masterData[type].push(input.value.trim());
+  input.value='';
+
   saveLocal();
   renderMasterOptions();
+
   showToast('Master data berhasil ditambahkan');
 }
 
-function editMaster(type, index) {
+function editMaster(type,index){
   const newValue = prompt('Edit Data', masterData[type][index]);
-  if (newValue && newValue.trim()) {
-    masterData[type][index] = newValue.trim();
+
+  if(newValue){
+    masterData[type][index] = newValue;
     saveLocal();
     renderMasterOptions();
     showToast('Master data berhasil diupdate');
   }
 }
 
-function deleteMaster(type, index) {
-  if (!confirm('Hapus data ini?')) return;
-  masterData[type].splice(index, 1);
-  saveLocal();
-  renderMasterOptions();
-  showToast('Master data berhasil dihapus');
-}
-
-/* =========================================================
-   MODAL
-   ========================================================= */
-function openTransactionModal() {
-  document.getElementById('transactionModal').classList.add('active');
-  if (editIndex === null) {
-    document.getElementById('modalTitle').textContent = 'Tambah Transaksi';
-    document.getElementById('transactionNo').value = transactions.length + 1;
-  } else {
-    document.getElementById('modalTitle').textContent = 'Edit Transaksi';
+function deleteMaster(type,index){
+  if(confirm('Hapus data?')){
+    masterData[type].splice(index,1);
+    saveLocal();
+    renderMasterOptions();
+    showToast('Master data berhasil dihapus');
   }
 }
 
-function closeTransactionModal() {
+function openTransactionModal(isEdit = false){
+
+  document.getElementById('transactionModal')
+  .classList.add('active');
+
+  if(!isEdit){
+
+    currentId = Date.now().toString();
+
+    document.getElementById('transactionNo').value =
+      currentId;
+
+    document.querySelector(
+      '#transactionModal .modal-header h2'
+    ).innerText = 'Tambah Transaksi';
+  }
+}
+
+function closeTransactionModal(){
   document.getElementById('transactionModal').classList.remove('active');
   document.getElementById('transactionForm').reset();
   editIndex = null;
 }
 
-function openMasterModal()  { document.getElementById('masterModal').classList.add('active'); }
-function closeMasterModal() { document.getElementById('masterModal').classList.remove('active'); }
+function openMasterModal(){
+  document.getElementById('masterModal').classList.add('active');
+}
 
-/* =========================================================
-   HELPERS
-   ========================================================= */
-function getBadgeClass(progress) {
-  if (progress === 'Done')           return 'progress-done';
-  if (progress === 'Registrasi')     return 'progress-reg';
-  if (progress === 'Progress Check') return 'progress-check';
+function closeMasterModal(){
+  document.getElementById('masterModal').classList.remove('active');
+}
+
+function getBadgeClass(progress){
+  if(progress === 'Done') return 'progress-done';
+  if(progress === 'Registrasi') return 'progress-reg';
+  if(progress === 'Progress Check') return 'progress-check';
   return 'progress-batal';
 }
 
-function getBadgeIcon(progress) {
-  if (progress === 'Done')           return 'fa-circle-check';
-  if (progress === 'Registrasi')     return 'fa-clipboard-list';
-  if (progress === 'Progress Check') return 'fa-hourglass-half';
-  return 'fa-circle-xmark';
-}
-
-function formatDate(d) {
-  if (!d) return '-';
-  const date = new Date(d);
-  if (isNaN(date)) return d;
-  return date.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
-}
-
-function escapeHTML(str) {
-  return String(str ?? '').replace(/[&<>"']/g, m =>
-    ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
-}
-
-/* =========================================================
-   TABLE RENDER + SORT + PAGINATION
-   ========================================================= */
-function getDisplayData() {
-  let data = filteredData ?? [...transactions];
-  if (sortKey) {
-    data.sort((a, b) => {
-      const av = (a[sortKey] || '').toString().toLowerCase();
-      const bv = (b[sortKey] || '').toString().toLowerCase();
-      if (av < bv) return sortDir === 'asc' ? -1 : 1;
-      if (av > bv) return sortDir === 'asc' ?  1 : -1;
-      return 0;
-    });
-  }
-  return data;
-}
-
-function renderTable() {
+function renderTable(data = transactions){
   const tbody = document.getElementById('tableBody');
-  const data = getDisplayData();
-  const totalPages = Math.max(1, Math.ceil(data.length / rowsPerPage));
-  if (currentPage > totalPages) currentPage = totalPages;
 
   const start = (currentPage - 1) * rowsPerPage;
   const paginated = data.slice(start, start + rowsPerPage);
 
-  if (!paginated.length) {
-    tbody.innerHTML = `
-      <tr><td colspan="14">
-        <div class="empty-state">
-          <i class="fa-solid fa-folder-open"></i>
-          <h3>Belum ada data</h3>
-          <p>Klik "Tambah Data" untuk membuat transaksi baru.</p>
+  tbody.innerHTML = paginated.map((item,index)=>`
+    <tr>
+      <td>${start + index + 1}</td>
+      <td>${item.nama}</td>
+      <td>${item.divisi}</td>
+      <td>${item.training}</td>
+      <td>${item.tanggalMulai}</td>
+      <td>${item.tanggalSelesai}</td>
+      <td>${item.vendor}</td>
+      <td>${item.lokasi}</td>
+      <td>
+        <span class="badge ${getBadgeClass(item.progress)}">
+          ${item.progress}
+        </span>
+      </td>
+      <td>${item.tnf}</td>
+      <td>${item.upd}</td>
+      <td>${item.note || '-'}</td>
+      <td>
+        ${item.fileName ? `<span class="file-link">${item.fileName}</span>` : '-'}
+      </td>
+      <td>
+        <div class="action-buttons">
+          <button class="icon-btn edit-btn" onclick="editTransaction(${transactions.indexOf(item)})">
+            <i class="fa-solid fa-pen"></i>
+          </button>
+
+          <button class="icon-btn delete-btn" onclick="deleteTransaction(${transactions.indexOf(item)})">
+            <i class="fa-solid fa-trash"></i>
+          </button>
         </div>
-      </td></tr>`;
-  } else {
-    tbody.innerHTML = paginated.map((item, index) => {
-      const realIndex = transactions.indexOf(item);
-      return `
-        <tr>
-          <td>${start + index + 1}</td>
-          <td><strong>${escapeHTML(item.nama)}</strong></td>
-          <td><span class="pill-soft">${escapeHTML(item.divisi)}</span></td>
-          <td>${escapeHTML(item.training)}</td>
-          <td>${formatDate(item.tanggalMulai)}</td>
-          <td>${formatDate(item.tanggalSelesai)}</td>
-          <td>${escapeHTML(item.vendor)}</td>
-          <td>${escapeHTML(item.lokasi)}</td>
-          <td>
-            <span class="badge ${getBadgeClass(item.progress)}">
-              <i class="fa-solid ${getBadgeIcon(item.progress)}"></i>
-              ${escapeHTML(item.progress)}
-            </span>
-          </td>
-          <td>${escapeHTML(item.tnf)}</td>
-          <td>${escapeHTML(item.upd)}</td>
-          <td title="${escapeHTML(item.note || '')}">
-            ${item.note ? escapeHTML(item.note).slice(0, 30) + (item.note.length > 30 ? '…' : '') : '-'}
-          </td>
-          <td>${item.fileName
-            ? `<span class="file-link"><i class="fa-solid fa-paperclip"></i> ${escapeHTML(item.fileName)}</span>`
-            : '-'}
-          </td>
-          <td>
-            <div class="action-buttons">
-              <button class="icon-btn edit-btn"   onclick="editTransaction(${realIndex})"   title="Edit"><i class="fa-solid fa-pen"></i></button>
-              <button class="icon-btn delete-btn" onclick="deleteTransaction(${realIndex})" title="Hapus"><i class="fa-solid fa-trash"></i></button>
-            </div>
-          </td>
-        </tr>`;
-    }).join('');
-  }
+      </td>
+    </tr>
+  `).join('');
 
-  document.getElementById('pageInfo').textContent = `Page ${currentPage} of ${totalPages}`;
-  document.getElementById('entriesInfo').textContent =
-    `of ${data.length} entries${filteredData !== null ? ' (filtered)' : ''}`;
-
-  // sort indicator
-  document.querySelectorAll('#dataTable th[data-sort]').forEach(th => {
-    th.classList.remove('sort-active');
-    const icon = th.querySelector('.sort-icon');
-    icon.className = 'fa-solid fa-sort sort-icon';
-    if (th.dataset.sort === sortKey) {
-      th.classList.add('sort-active');
-      icon.className = `fa-solid ${sortDir === 'asc' ? 'fa-sort-up' : 'fa-sort-down'} sort-icon`;
-    }
-  });
+  document.getElementById('pageInfo').innerText = `Page ${currentPage}`;
 
   updateStats();
 }
 
-function updateStats() {
-  const total = transactions.length;
-  const done   = transactions.filter(i => i.progress === 'Done').length;
-  const reg    = transactions.filter(i => i.progress === 'Registrasi').length;
-  const cancel = transactions.filter(i => i.progress === 'Batal').length;
-  const pct = n => total ? Math.round((n / total) * 100) + '%' : '0%';
-
-  document.getElementById('totalData').textContent  = total;
-  document.getElementById('doneData').textContent   = done;
-  document.getElementById('regData').textContent    = reg;
-  document.getElementById('cancelData').textContent = cancel;
-
-  document.getElementById('totalDataInfo').textContent  = `${transactions.filter(i => i.progress === 'Progress Check').length} progress check`;
-  document.getElementById('doneDataInfo').textContent   = `${pct(done)} selesai`;
-  document.getElementById('regDataInfo').textContent    = `${pct(reg)} pending`;
-  document.getElementById('cancelDataInfo').textContent = `${pct(cancel)} dibatalkan`;
+function updateStats(){
+  document.getElementById('totalData').innerText = transactions.length;
+  document.getElementById('doneData').innerText = transactions.filter(i=>i.progress==='Done').length;
+  document.getElementById('regData').innerText = transactions.filter(i=>i.progress==='Registrasi').length;
+  document.getElementById('cancelData').innerText = transactions.filter(i=>i.progress==='Batal').length;
 }
 
-/* =========================================================
-   CRUD TRANSACTION
-   ========================================================= */
-function editTransaction(index) {
+function editTransaction(index){
+
   const item = transactions[index];
+currentId = item.id;
   editIndex = index;
 
-  document.getElementById('transactionNo').value   = index + 1;
-  document.getElementById('nama').value            = item.nama;
-  document.getElementById('divisi').value          = item.divisi;
-  document.getElementById('training').value        = item.training;
-  document.getElementById('tanggalMulai').value    = item.tanggalMulai;
-  document.getElementById('tanggalSelesai').value  = item.tanggalSelesai;
-  document.getElementById('vendor').value          = item.vendor;
-  document.getElementById('lokasi').value          = item.lokasi;
-  document.getElementById('progress').value        = item.progress;
-  document.getElementById('tnf').value             = item.tnf;
-  document.getElementById('upd').value             = item.upd;
-  document.getElementById('note').value            = item.note || '';
+  document.querySelector(
+    '#transactionModal .modal-header h2'
+  ).innerText = 'Edit Transaksi';
 
-  openTransactionModal();
+  document.getElementById('transactionNo').value =
+    index + 1;
+
+  document.getElementById('nama').value = item.nama;
+  document.getElementById('divisi').value = item.divisi;
+  document.getElementById('training').value = item.training;
+  document.getElementById('tanggalMulai').value = item.tanggalMulai;
+  document.getElementById('tanggalSelesai').value = item.tanggalSelesai;
+  document.getElementById('vendor').value = item.vendor;
+  document.getElementById('lokasi').value = item.lokasi;
+  document.getElementById('progress').value = item.progress;
+  document.getElementById('tnf').value = item.tnf;
+  document.getElementById('upd').value = item.upd;
+  document.getElementById('note').value = item.note;
+
+  openTransactionModal(true);
 }
 
-function deleteTransaction(index) {
-  if (!confirm('Hapus transaksi ini?')) return;
-  transactions.splice(index, 1);
-  saveLocal();
-  if (filteredData) applyFilter(); else renderTable();
-  showToast('Data berhasil dihapus');
-}
+async function deleteTransaction(index){
 
-/* =========================================================
-   FILTER
-   ========================================================= */
-function applyFilter() {
-  const nama      = document.getElementById('filterNama').value.toLowerCase();
-  const divisi    = document.getElementById('filterDivisi').value;
-  const training  = document.getElementById('filterTraining').value;
-  const startDate = document.getElementById('filterStartDate').value;
-  const endDate   = document.getElementById('filterEndDate').value;
-  const progress  = document.getElementById('filterProgress').value;
-
-  const hasFilter = nama || divisi || training || startDate || endDate || progress;
-
-  if (!hasFilter) {
-    filteredData = null;
-  } else {
-    filteredData = transactions.filter(item => {
-      const matchNama = !nama ||
-        item.nama.toLowerCase().includes(nama) ||
-        (item.training || '').toLowerCase().includes(nama);
-      const matchDivisi   = !divisi   || item.divisi   === divisi;
-      const matchTraining = !training || item.training === training;
-      // date range filter (inclusive)
-      const matchStart = !startDate || (item.tanggalMulai && item.tanggalMulai >= startDate);
-      const matchEnd   = !endDate   || (item.tanggalSelesai && item.tanggalSelesai <= endDate);
-      const matchProg  = !progress  || item.progress === progress;
-      return matchNama && matchDivisi && matchTraining && matchStart && matchEnd && matchProg;
-    });
+  if(!confirm('Hapus transaksi ini?')){
+    return;
   }
 
-  currentPage = 1;
+  const deletedId = transactions[index].id;
+
+  transactions.splice(index,1);
+
+  saveLocal();
   renderTable();
-}
 
-function resetFilter() {
-  ['filterNama','filterDivisi','filterTraining','filterStartDate','filterEndDate','filterProgress']
-    .forEach(id => document.getElementById(id).value = '');
-  filteredData = null;
-  currentPage = 1;
-  renderTable();
-  showToast('Filter direset', 'info');
-}
+  showToast('Data berhasil dihapus');
 
-/* =========================================================
-   PAGINATION
-   ========================================================= */
-function changeRowsPerPage() {
-  rowsPerPage = parseInt(document.getElementById('rowsPerPageSelect').value);
-  currentPage = 1;
-  renderTable();
-}
+  try{
 
-function nextPage() {
-  const total = Math.ceil(getDisplayData().length / rowsPerPage);
-  if (currentPage < total) { currentPage++; renderTable(); }
-}
-
-function prevPage() {
-  if (currentPage > 1) { currentPage--; renderTable(); }
-}
-
-/* =========================================================
-   SORTING
-   ========================================================= */
-document.querySelectorAll('#dataTable th[data-sort]').forEach(th => {
-  th.addEventListener('click', () => {
-    const key = th.dataset.sort;
-    if (sortKey === key) {
-      sortDir = sortDir === 'asc' ? 'desc' : 'asc';
-    } else {
-      sortKey = key;
-      sortDir = 'asc';
-    }
-    renderTable();
-  });
+const response = await fetch(API_URL,{
+  method:'POST',
+  headers:{
+    'Content-Type':'application/json'
+  },
+  body:JSON.stringify({
+    action:'delete',
+    password:syncPassword,
+    id:deletedId
+  })
 });
 
-/* =========================================================
-   DARK MODE (persisted)
-   ========================================================= */
-function toggleDarkMode() {
-  document.body.classList.toggle('dark');
-  const isDark = document.body.classList.contains('dark');
-  localStorage.setItem('darkMode', isDark ? '1' : '0');
-  document.querySelector('#darkModeBtn i').className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+const result = await response.json();
+
+if(!result.success){
+  alert(result.message);
+  return;
 }
 
-function loadDarkMode() {
-  if (localStorage.getItem('darkMode') === '1') {
-    document.body.classList.add('dark');
-    document.querySelector('#darkModeBtn i').className = 'fa-solid fa-sun';
+showToast(result.message);
+
+console.log(result);
+
+  }catch(error){
+    console.error(error);
   }
 }
 
-/* =========================================================
-   EXPORT / IMPORT
-   ========================================================= */
-function exportData() {
-  if (!transactions.length) return showToast('Tidak ada data untuk diexport', 'error');
+function applyFilter(){
+  const nama = document.getElementById('filterNama').value.toLowerCase();
+  const divisi = document.getElementById('filterDivisi').value;
+  const training = document.getElementById('filterTraining').value;
+  const startDate = document.getElementById('filterStartDate').value;
+  const endDate = document.getElementById('filterEndDate').value;
+  const progress = document.getElementById('filterProgress').value;
+
+  const filtered = transactions.filter(item=>{
+    return (
+      item.nama.toLowerCase().includes(nama) &&
+      (divisi === '' || item.divisi === divisi) &&
+      (training === '' || item.training === training) &&
+      (startDate === '' || item.tanggalMulai === startDate) &&
+      (endDate === '' || item.tanggalSelesai === endDate) &&
+      (progress === '' || item.progress === progress)
+    );
+  });
+
+  currentPage = 1;
+  renderTable(filtered);
+}
+
+function resetFilter(){
+  document.getElementById('filterNama').value='';
+  document.getElementById('filterDivisi').value='';
+  document.getElementById('filterTraining').value='';
+  document.getElementById('filterStartDate').value='';
+  document.getElementById('filterEndDate').value='';
+  document.getElementById('filterProgress').value='';
+
+  renderTable();
+}
+
+function changeRowsPerPage(){
+  rowsPerPage = parseInt(
+    document.getElementById('rowsPerPageSelect').value
+  );
+
+  currentPage = 1;
+
+  renderTable();
+}
+
+function nextPage(){
+  const totalPage = Math.ceil(transactions.length / rowsPerPage);
+
+  if(currentPage < totalPage){
+    currentPage++;
+    renderTable();
+  }
+}
+
+function prevPage(){
+  if(currentPage > 1){
+    currentPage--;
+    renderTable();
+  }
+}
+
+function toggleDarkMode(){
+  document.body.classList.toggle('dark');
+}
+
+function exportData(){
+  if(transactions.length === 0){
+    alert('Tidak ada data');
+    return;
+  }
 
   const headers = Object.keys(transactions[0]);
-  const csvRows = [
-    headers.join(';'),
-    ...transactions.map(row =>
-      headers.map(field => `"${(row[field] ?? '').toString().replace(/"/g, '""')}"`).join(';')
-    )
-  ];
 
-  // BOM for Excel UTF-8 compatibility
-  const blob = new Blob(['\ufeff' + csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
-  const url  = URL.createObjectURL(blob);
+  const csvRows = [
+  headers.join(';'),
+  ...transactions.map(row=>
+    headers.map(field=>`"${row[field] || ''}"`).join(';')
+  )
+];
+
+  const blob = new Blob([csvRows.join('\n')], {type:'text/csv'});
+
+  const url = URL.createObjectURL(blob);
+
   const a = document.createElement('a');
   a.href = url;
-  a.download = `training_tracker_${new Date().toISOString().slice(0,10)}.csv`;
+  a.download = 'training_tracker.csv';
   a.click();
-  URL.revokeObjectURL(url);
+
   showToast('Export berhasil');
 }
 
-document.getElementById('importFile').addEventListener('change', function (e) {
-  const file = e.target.files[0];
-  if (!file) return;
+async function saveAllToCloud(){
 
-  const reader = new FileReader();
-  reader.onload = function (event) {
-    try {
-      const text = event.target.result.replace(/^\ufeff/, '');
-      const lines = text.split(/\r?\n/).filter(Boolean);
-      const headers = lines[0].split(';').map(h => h.replace(/"/g, '').trim());
-      const imported = [];
+  if(!syncPassword){
 
-      for (let i = 1; i < lines.length; i++) {
-        const cells = lines[i].split(';');
-        const obj = {};
-        headers.forEach((h, idx) => { obj[h] = (cells[idx] || '').replace(/^"|"$/g, ''); });
-        imported.push(obj);
-      }
+    syncPassword = prompt(
+      "Masukkan Password Save To Cloud"
+    );
 
-      transactions = [...transactions, ...imported];
-      saveLocal();
-      renderTable();
-      showToast(`Import berhasil: ${imported.length} baris`);
-    } catch (err) {
-      showToast('Gagal import: format tidak valid', 'error');
+    if(!syncPassword){
+      return;
     }
-  };
-  reader.readAsText(file);
-  e.target.value = '';
-});
 
-/* =========================================================
-   BACKUP / RESTORE (JSON)
-   ========================================================= */
-function backupJSON() {
-  const payload = { transactions, masterData, exportedAt: new Date().toISOString() };
-  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `learning_tracker_backup_${new Date().toISOString().slice(0,10)}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
-  showToast('Backup berhasil');
+  }
+
+  try{
+
+  console.log("DATA DIKIRIM:");
+  console.log({
+    action:"saveAll",
+    password:syncPassword,
+    data:transactions
+  });
+
+  const response = await fetch(API_URL,{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json"
+    },
+    body:JSON.stringify({
+      action:"saveAll",
+      password:syncPassword,
+      data:transactions
+    })
+  });
+
+  console.log("STATUS:",response.status);
+
+  const text = await response.text();
+
+  console.log("RESPON:");
+  console.log(text);
+
+}catch(error){
+
+  console.error("ERROR:");
+  console.error(error);
+
 }
+}
+// IMPORT CSV
 
-document.getElementById('restoreFile').addEventListener('change', function (e) {
+document.getElementById('importFile').addEventListener('change', function(e){
   const file = e.target.files[0];
-  if (!file) return;
-  if (!confirm('Restore akan menimpa data saat ini. Lanjutkan?')) { e.target.value=''; return; }
+
+  if(!file) return;
 
   const reader = new FileReader();
-  reader.onload = ev => {
-    try {
-      const data = JSON.parse(ev.target.result);
-      if (data.transactions) transactions = data.transactions;
-      if (data.masterData)   masterData   = data.masterData;
-      saveLocal();
-      renderMasterOptions();
-      renderTable();
-      showToast('Restore berhasil');
-    } catch {
-      showToast('File backup tidak valid', 'error');
+
+  reader.onload = function(event){
+    const lines = event.target.result.split('\n');
+
+    const headers = lines[0].split(';');
+
+    const imported = [];
+
+    for(let i=1;i<lines.length;i++){
+      if(!lines[i]) continue;
+
+      const obj = {};
+      const currentLine = lines[i].split(';');
+
+      headers.forEach((header,index)=>{
+        obj[header.replace(/"/g,'')] = currentLine[index]?.replace(/"/g,'');
+      });
+
+      imported.push(obj);
     }
+
+    transactions = [...transactions, ...imported];
+
+    saveLocal();
+    renderTable();
+
+    showToast('Import berhasil');
   };
+
   reader.readAsText(file);
-  e.target.value = '';
 });
 
-/* =========================================================
-   SAVE TRANSACTION
-   ========================================================= */
-document.getElementById('transactionForm').addEventListener('submit', function (e) {
+// SAVE TRANSACTION
+
+document.getElementById('transactionForm')
+.addEventListener('submit', async function(e){
   e.preventDefault();
 
   const fileInput = document.getElementById('fileData');
   const file = fileInput.files[0];
+
   const allowed = ['pdf','xlsx','xls','doc','docx','png','jpg','jpeg'];
 
-  if (file) {
+  if(file){
     const ext = file.name.split('.').pop().toLowerCase();
-    if (!allowed.includes(ext)) return showToast('Format file tidak didukung', 'error');
-    if (file.size > 5 * 1024 * 1024) return showToast('Ukuran file melebihi 5MB', 'error');
-  }
 
-  const mulai   = document.getElementById('tanggalMulai').value;
-  const selesai = document.getElementById('tanggalSelesai').value;
-  if (selesai < mulai) {
-    return showToast('Tanggal selesai tidak boleh lebih kecil dari tanggal mulai', 'error');
-  }
-
-  const data = {
-    nama:            document.getElementById('nama').value.trim(),
-    divisi:          document.getElementById('divisi').value,
-    training:        document.getElementById('training').value.trim(),
-    tanggalMulai:    mulai,
-    tanggalSelesai:  selesai,
-    vendor:          document.getElementById('vendor').value.trim(),
-    lokasi:          document.getElementById('lokasi').value.trim(),
-    progress:        document.getElementById('progress').value,
-    tnf:             document.getElementById('tnf').value,
-    upd:             document.getElementById('upd').value,
-    note:            document.getElementById('note').value.trim(),
-    fileName:        file ? file.name : (editIndex !== null ? (transactions[editIndex].fileName || '') : '')
-  };
-
-  // Auto-add to master database (case-insensitive)
-  ['training','vendor','lokasi'].forEach(key => {
-    if (data[key] && !masterData[key].some(i => i.toLowerCase() === data[key].toLowerCase())) {
-      masterData[key].push(data[key]);
+    if(!allowed.includes(ext)){
+      alert('Format file tidak didukung');
+      return;
     }
-  });
-  renderMasterOptions();
+  }
 
-  if (editIndex !== null) {
+const mulai = document.getElementById('tanggalMulai').value;
+const selesai = document.getElementById('tanggalSelesai').value;
+
+if(selesai < mulai){
+  alert('Tanggal selesai tidak boleh lebih kecil dari tanggal mulai');
+  return;
+}
+const confirmSave =
+confirm(
+'Apakah Anda yakin akan menyimpan data?'
+);
+
+if(!confirmSave){
+  return;
+}
+const data = {
+  id: currentId,
+  nama:document.getElementById('nama').value,
+  divisi:document.getElementById('divisi').value,
+  training:document.getElementById('training').value,
+  tanggalMulai:document.getElementById('tanggalMulai').value,
+  tanggalSelesai:document.getElementById('tanggalSelesai').value,
+  vendor:document.getElementById('vendor').value,
+  lokasi:document.getElementById('lokasi').value,
+  progress:document.getElementById('progress').value,
+  tnf:document.getElementById('tnf').value,
+  upd:document.getElementById('upd').value,
+  note:document.getElementById('note').value,
+  fileName:file ? file.name : ''
+};
+console.log("DATA AKAN DIKIRIM");
+console.log(data);
+
+try{
+
+const response = await fetch(API_URL,{
+  method:'POST',
+  headers:{
+    'Content-Type':'application/json'
+  },
+  body:JSON.stringify({
+    action: editIndex !== null ? "edit" : "add",
+    password:syncPassword,
+    ...data
+  })
+});
+
+const text = await response.text();
+
+console.log("RESPON GOOGLE SCRIPT:");
+console.log(text);
+
+alert(text);
+
+}catch(error){
+
+  console.error(error);
+
+  showToast('Gagal sinkron ke Google Sheet');
+
+}
+
+// =========================
+// AUTO ADD MASTER DATABASE
+// =========================
+
+if(
+  data.training &&
+  !masterData.training.some(
+    item => item.toLowerCase() === data.training.toLowerCase()
+  )
+){
+  masterData.training.push(data.training);
+}
+
+if(
+  data.vendor &&
+  !masterData.vendor.some(
+    item => item.toLowerCase() === data.vendor.toLowerCase()
+  )
+){
+  masterData.vendor.push(data.vendor);
+}
+
+if(
+  data.lokasi &&
+  !masterData.lokasi.some(
+    item => item.toLowerCase() === data.lokasi.toLowerCase()
+  )
+){
+  masterData.lokasi.push(data.lokasi);
+}
+
+// refresh dropdown
+renderMasterOptions();
+
+  if(editIndex !== null){
     transactions[editIndex] = data;
     showToast('Data berhasil diupdate');
-  } else {
+  }else{
     transactions.push(data);
     showToast('Data berhasil disimpan');
   }
 
   saveLocal();
-  if (filteredData) applyFilter(); else renderTable();
+  renderTable();
   closeTransactionModal();
 });
 
-/* =========================================================
-   CLEAR DATA
-   ========================================================= */
-function clearAllData() {
-  if (!confirm('Apakah yakin ingin menghapus seluruh data transaksi?')) return;
-  if (!confirm('Tindakan ini tidak dapat dibatalkan. Lanjutkan?')) return;
+function clearAllData(){
+
+  const confirmDelete = confirm(
+    'Apakah yakin ingin menghapus seluruh data transaksi?'
+  );
+
+  if(!confirmDelete) return;
+
+  // hapus semua transaksi
   transactions = [];
+
+  // reset halaman
   currentPage = 1;
-  filteredData = null;
+
+  // simpan local storage
   saveLocal();
+
+  // refresh table
   renderTable();
+
+  // toast
   showToast('Semua data berhasil dihapus');
 }
 
-/* =========================================================
-   FILTER TOGGLE (with persistence)
-   ========================================================= */
-function toggleFilter() {
+function toggleFilter(){
+
   const section = document.getElementById('filterSection');
   const btn = document.getElementById('filterToggleBtn');
-  const open = section.style.display === 'none';
-  section.style.display = open ? 'block' : 'none';
-  btn.innerHTML = open
-    ? '<i class="fa-solid fa-chevron-up"></i> <span>Hide</span>'
-    : '<i class="fa-solid fa-chevron-down"></i> <span>Show</span>';
-  localStorage.setItem('filterOpen', open ? '1' : '0');
+
+  if(section.style.display === 'none'){
+
+    section.style.display = 'block';
+
+    btn.innerHTML = `
+      <i class="fa-solid fa-chevron-up"></i>
+      Hide
+    `;
+
+  }else{
+
+    section.style.display = 'none';
+
+    btn.innerHTML = `
+      <i class="fa-solid fa-chevron-down"></i>
+      Show
+    `;
+  }
 }
 
-function loadFilterState() {
-  if (localStorage.getItem('filterOpen') === '1') toggleFilter();
-}
-
-/* =========================================================
-   KEYBOARD SHORTCUTS
-   ========================================================= */
-document.addEventListener('keydown', e => {
-  // ESC closes any open modal
-  if (e.key === 'Escape') {
-    document.querySelectorAll('.modal.active').forEach(m => m.classList.remove('active'));
-  }
-  // Ctrl/Cmd + N -> new transaction
-  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'n') {
-    e.preventDefault();
-    openTransactionModal();
-  }
-});
-
-// Click outside modal closes it
-document.querySelectorAll('.modal').forEach(modal => {
-  modal.addEventListener('click', e => {
-    if (e.target === modal) modal.classList.remove('active');
-  });
-});
-
-/* =========================================================
-   BOOT
-   ========================================================= */
-loadDarkMode();
 initDivisions();
 renderMasterOptions();
-loadFilterState();
-renderTable();
+window.onload = function(){
+  renderTable();
+}
 </script>
 
 </body>
