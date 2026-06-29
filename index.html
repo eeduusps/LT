@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Training Transaction Tracker</title>
+<title>Learning Tracker - KSEI</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,448 +12,105 @@
 
 <style>
 :root{
-  --bg:#f4f7fb;
-  --card:#ffffff;
-  --text:#1f2937;
-  --muted:#6b7280;
-  --primary:#2563eb;
-  --primary-hover:#1d4ed8;
-  --danger:#ef4444;
-  --success:#10b981;
-  --warning:#f59e0b;
-  --border:#e5e7eb;
-  --shadow:0 10px 25px rgba(0,0,0,.08);
+  --bg:#f4f7fb; --card:#fff; --text:#1f2937; --muted:#6b7280;
+  --primary:#2563eb; --primary-hover:#1d4ed8;
+  --danger:#ef4444; --success:#10b981; --warning:#f59e0b;
+  --border:#e5e7eb; --shadow:0 10px 25px rgba(0,0,0,.08);
 }
-
 body.dark{
-  --bg:#111827;
-  --card:#1f2937;
-  --text:#f9fafb;
-  --muted:#9ca3af;
-  --border:#374151;
-  --shadow:0 10px 25px rgba(0,0,0,.35);
+  --bg:#111827; --card:#1f2937; --text:#f9fafb; --muted:#9ca3af;
+  --border:#374151; --shadow:0 10px 25px rgba(0,0,0,.35);
 }
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);transition:.3s}
 
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-}
+.container{width:min(1500px,95%);margin:auto;padding:24px 0 50px}
 
-body{
-  font-family:'Inter',sans-serif;
-  background:var(--bg);
-  color:var(--text);
-  transition:.3s;
-}
+.header{display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap;margin-bottom:24px}
+.title h1{font-size:28px;font-weight:700}
+.title p{color:var(--muted);margin-top:5px}
 
-.container{
-  width:min(1500px,95%);
-  margin:auto;
-  padding:24px 0 50px;
-}
+.btn-group{display:flex;flex-wrap:wrap;gap:10px}
+button,input,select,textarea{font-family:inherit}
+.btn{border:none;padding:12px 16px;border-radius:12px;cursor:pointer;font-weight:600;transition:.2s;display:inline-flex;align-items:center;gap:8px}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-primary:hover{background:var(--primary-hover)}
+.btn-secondary{background:#e5e7eb;color:#111827}
+.btn-danger{background:var(--danger);color:#fff}
+.btn-success{background:var(--success);color:#fff}
+.btn:disabled{opacity:.5;cursor:not-allowed}
 
-.header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:15px;
-  flex-wrap:wrap;
-  margin-bottom:24px;
-}
+.card{background:var(--card);border-radius:20px;box-shadow:var(--shadow);padding:20px;margin-bottom:24px}
 
-.title h1{
-  font-size:28px;
-  font-weight:700;
-}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;margin-bottom:24px}
+.stat-box{background:var(--card);border-radius:20px;padding:20px;box-shadow:var(--shadow)}
+.stat-box h3{color:var(--muted);font-size:14px;margin-bottom:8px}
+.stat-box p{font-size:30px;font-weight:700}
 
-.title p{
-  color:var(--muted);
-  margin-top:5px;
+.filter-grid,.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.input-group{display:flex;flex-direction:column;gap:8px}
+.input-group label{font-size:14px;font-weight:600}
+.input-group input,.input-group select,.input-group textarea{
+  border:1px solid var(--border);background:transparent;color:var(--text);
+  padding:12px;border-radius:12px;outline:none;
 }
+.input-group textarea{resize:vertical;min-height:100px}
+.filter-actions{margin-top:18px;display:flex;gap:10px;flex-wrap:wrap}
 
-.btn-group{
-  display:flex;
-  flex-wrap:wrap;
-  gap:10px;
-}
+.table-container{overflow:auto;border-radius:16px}
+.table{width:100%;border-collapse:collapse;min-width:1400px}
+.table th,.table td{padding:14px;border-bottom:1px solid var(--border);text-align:left;font-size:14px;vertical-align:top}
+.table th{position:sticky;top:0;background:var(--card);z-index:5;cursor:pointer;user-select:none}
+.table th .sort-ind{font-size:10px;color:var(--muted);margin-left:4px}
+.table tr:hover{background:rgba(37,99,235,.05)}
 
-button,
-input,
-select,
-textarea{
-  font-family:inherit;
-}
+.badge{display:inline-flex;align-items:center;justify-content:center;padding:7px 14px;border-radius:999px;font-size:12px;font-weight:600;line-height:1;min-height:30px;white-space:nowrap}
+.progress-done{background:#dcfce7;color:#166534;border:1px solid #bbf7d0}
+.progress-reg{background:#dbeafe;color:#1d4ed8;border:1px solid #bfdbfe}
+.progress-check{background:#fef3c7;color:#92400e;border:1px solid #fde68a}
+.progress-batal{background:#fee2e2;color:#991b1b;border:1px solid #fecaca}
 
-.btn{
-  border:none;
-  padding:12px 16px;
-  border-radius:12px;
-  cursor:pointer;
-  font-weight:600;
-  transition:.2s;
-  display:flex;
-  align-items:center;
-  gap:8px;
-}
+.action-buttons{display:flex;gap:8px}
+.icon-btn{border:none;width:36px;height:36px;border-radius:10px;cursor:pointer}
+.edit-btn{background:#dbeafe;color:#1d4ed8}
+.delete-btn{background:#fee2e2;color:#991b1b}
 
-.btn-primary{
-  background:var(--primary);
-  color:#fff;
-}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;justify-content:center;align-items:center;padding:20px;z-index:1000}
+.modal.active{display:flex;animation:fade .25s ease}
+@keyframes fade{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+.modal-content{width:min(1100px,100%);max-height:90vh;overflow:auto;background:var(--card);border-radius:24px;padding:24px;box-shadow:var(--shadow)}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.close-btn{background:none;border:none;font-size:24px;cursor:pointer;color:var(--text)}
+.modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:24px}
 
-.btn-primary:hover{
-  background:var(--primary-hover);
-}
+.master-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
+.master-tools{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid var(--border)}
+.master-box{border:1px solid var(--border);border-radius:18px;padding:18px}
+.master-list{margin-top:15px;display:flex;flex-direction:column;gap:10px;max-height:300px;overflow:auto}
+.master-item{display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:12px;background:rgba(0,0,0,.04)}
 
-.btn-secondary{
-  background:#e5e7eb;
-  color:#111827;
-}
+.table-footer{margin-top:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:15px}
+.show-entries{display:flex;align-items:center;gap:10px}
+.show-entries select{padding:10px 14px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--text)}
+.pagination{display:flex;align-items:center;gap:10px}
 
-.btn-danger{
-  background:var(--danger);
-  color:#fff;
-}
+.toast{position:fixed;right:20px;bottom:20px;background:#111827;color:#fff;padding:14px 18px;border-radius:12px;display:none;z-index:9999;max-width:340px}
+.toast.show{display:block;animation:fade .3s ease}
+.toast.error{background:var(--danger)}
+.toast.success{background:var(--success)}
 
-.btn-success{
-  background:var(--success);
-  color:#fff;
-}
+.file-link{color:var(--primary);text-decoration:none;font-weight:600}
+.file-link:hover{text-decoration:underline}
 
-.card{
-  background:var(--card);
-  border-radius:20px;
-  box-shadow:var(--shadow);
-  padding:20px;
-  margin-bottom:24px;
-}
-
-.stats{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-  gap:15px;
-  margin-bottom:24px;
-}
-
-.stat-box{
-  background:var(--card);
-  border-radius:20px;
-  padding:20px;
-  box-shadow:var(--shadow);
-}
-
-.stat-box h3{
-  color:var(--muted);
-  font-size:14px;
-  margin-bottom:8px;
-}
-
-.stat-box p{
-  font-size:30px;
-  font-weight:700;
-}
-
-.filter-grid,
-.form-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-  gap:16px;
-}
-
-.input-group{
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-}
-
-.input-group label{
-  font-size:14px;
-  font-weight:600;
-}
-
-.input-group input,
-.input-group select,
-.input-group textarea{
-  border:1px solid var(--border);
-  background:transparent;
-  color:var(--text);
-  padding:12px;
-  border-radius:12px;
-  outline:none;
-}
-
-.input-group textarea{
-  resize:vertical;
-  min-height:100px;
-}
-
-.filter-actions{
-  margin-top:18px;
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-}
-
-.table-container{
-  overflow:auto;
-  border-radius:16px;
-}
-
-.table{
-  width:100%;
-  border-collapse:collapse;
-  min-width:1400px;
-}
-
-.table th,
-.table td{
-  padding:14px;
-  border-bottom:1px solid var(--border);
-  text-align:left;
-  font-size:14px;
-}
-
-.table th{
-  position:sticky;
-  top:0;
-  background:var(--card);
-  z-index:5;
-  cursor:pointer;
-}
-
-.table tr:hover{
-  background:rgba(37,99,235,.05);
-}
-
-.badge{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  padding:7px 14px;
-  border-radius:999px;
-  font-size:12px;
-  font-weight:600;
-  line-height:1;
-  min-height:30px;
-  white-space:nowrap;
-}
-.table td:nth-child(9),
-.table th:nth-child(9){
-  text-align:center;
-}
-.progress-done{
-  background:#dcfce7;
-  color:#166534;
-  border:1px solid #bbf7d0;
-}
-
-.progress-reg{
-  background:#dbeafe;
-  color:#1d4ed8;
-  border:1px solid #bfdbfe;
-}
-
-.progress-check{
-  background:#fef3c7;
-  color:#92400e;
-  border:1px solid #fde68a;
-}
-
-.progress-batal{
-  background:#fee2e2;
-  color:#991b1b;
-  border:1px solid #fecaca;
-}
-
-.action-buttons{
-  display:flex;
-  gap:8px;
-}
-
-.icon-btn{
-  border:none;
-  width:36px;
-  height:36px;
-  border-radius:10px;
-  cursor:pointer;
-}
-
-.edit-btn{
-  background:#dbeafe;
-  color:#1d4ed8;
-}
-
-.delete-btn{
-  background:#fee2e2;
-  color:#991b1b;
-}
-
-.modal{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.5);
-  display:none;
-  justify-content:center;
-  align-items:center;
-  padding:20px;
-  z-index:1000;
-}
-
-.modal.active{
-  display:flex;
-  animation:fade .25s ease;
-}
-
-@keyframes fade{
-  from{opacity:0;transform:scale(.95)}
-  to{opacity:1;transform:scale(1)}
-}
-
-.modal-content{
-  width:min(1100px,100%);
-  max-height:90vh;
-  overflow:auto;
-  background:var(--card);
-  border-radius:24px;
-  padding:24px;
-  box-shadow:var(--shadow);
-}
-
-.modal-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:20px;
-}
-
-.close-btn{
-  background:none;
-  border:none;
-  font-size:24px;
-  cursor:pointer;
-  color:var(--text);
-}
-
-.modal-actions{
-  display:flex;
-  justify-content:flex-end;
-  gap:10px;
-  margin-top:24px;
-}
-
-.master-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
-  gap:20px;
-}
-
-.master-tools{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-  margin-bottom:24px;
-  padding-bottom:20px;
-  border-bottom:1px solid var(--border);
-}
-
-.master-box{
-  border:1px solid var(--border);
-  border-radius:18px;
-  padding:18px;
-}
-
-.master-list{
-  margin-top:15px;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-  max-height:300px;
-  overflow:auto;
-}
-
-.master-item{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:10px;
-  border-radius:12px;
-  background:rgba(0,0,0,.04);
-}
-
-.pagination{
-  display:flex;
-  justify-content:flex-end;
-  align-items:center;
-  gap:10px;
-}
-
-.toast{
-  position:fixed;
-  right:20px;
-  bottom:20px;
-  background:#111827;
-  color:#fff;
-  padding:14px 18px;
-  border-radius:12px;
-  display:none;
-  z-index:9999;
-}
-
-.toast.show{
-  display:block;
-  animation:fade .3s ease;
-}
-
-.file-link{
-  color:var(--primary);
-  text-decoration:none;
-  font-weight:600;
-}
+.sync-status{font-size:12px;color:var(--muted);margin-top:4px}
+.sync-status .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--muted);margin-right:6px}
+.sync-status.online .dot{background:var(--success)}
+.sync-status.offline .dot{background:var(--danger)}
 
 @media(max-width:768px){
-  .header{
-    flex-direction:column;
-    align-items:flex-start;
-  }
-
-  .btn-group{
-    width:100%;
-  }
-
-  .btn{
-    width:100%;
-    justify-content:center;
-  }
-}
-
-.table-footer{
-  margin-top:20px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  flex-wrap:wrap;
-  gap:15px;
-}
-
-.show-entries{
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
-
-.show-entries select{
-  padding:10px 14px;
-  border-radius:10px;
-  border:1px solid var(--border);
-  background:var(--card);
-  color:var(--text);
-}
-
-.pagination{
-  display:flex;
-  align-items:center;
-  gap:10px;
+  .header{flex-direction:column;align-items:flex-start}
+  .btn-group{width:100%}
+  .btn{flex:1;justify-content:center}
 }
 </style>
 </head>
@@ -465,1086 +122,757 @@ textarea{
     <div class="title">
       <h1><i class="fa-solid fa-graduation-cap"></i> Learning Tracker</h1>
       <p>Kustodian Sentral Efek Indonesia</p>
+      <div class="sync-status" id="syncStatus"><span class="dot"></span><span id="syncStatusText">Belum sinkron</span></div>
     </div>
 
     <div class="btn-group">
-      <button class="btn btn-primary" onclick="openTransactionModal()">
-        <i class="fa-solid fa-plus"></i>
-        Tambah Data
-      </button>
-<button class="btn btn-success"
-onclick="loadDataFromSheet()">
-<i class="fa-solid fa-rotate"></i>
-Auto Sync
-</button>
-<button
-  class="btn btn-success"
-  onclick="saveAllToCloud()">
-  <i class="fa-solid fa-cloud-arrow-up"></i>
-  Save To Cloud
-</button>
-      <button class="btn btn-secondary" onclick="openMasterModal()">
-        <i class="fa-solid fa-database"></i>
-        Database
-      </button>
-
-      <button class="btn btn-secondary" onclick="toggleDarkMode()">
-        <i class="fa-solid fa-moon"></i>
-      </button>
-
+      <button class="btn btn-primary" onclick="openTransactionModal()"><i class="fa-solid fa-plus"></i> Tambah Data</button>
+      <button class="btn btn-success" onclick="loadDataFromSheet()"><i class="fa-solid fa-rotate"></i> Auto Sync</button>
+      <button class="btn btn-success" onclick="saveAllToCloud()"><i class="fa-solid fa-cloud-arrow-up"></i> Save To Cloud</button>
+      <button class="btn btn-secondary" onclick="openMasterModal()"><i class="fa-solid fa-database"></i> Database</button>
+      <button class="btn btn-secondary" onclick="toggleDarkMode()" title="Dark mode"><i class="fa-solid fa-moon"></i></button>
       <input type="file" id="importFile" hidden accept=".csv">
     </div>
   </div>
 
   <div class="stats">
-    <div class="stat-box">
-      <h3>Total Data</h3>
-      <p id="totalData">0</p>
-    </div>
-
-    <div class="stat-box">
-      <h3>Done</h3>
-      <p id="doneData">0</p>
-    </div>
-
-    <div class="stat-box">
-      <h3>Registrasi</h3>
-      <p id="regData">0</p>
-    </div>
-
-    <div class="stat-box">
-      <h3>Batal</h3>
-      <p id="cancelData">0</p>
-    </div>
+    <div class="stat-box"><h3>Total Data</h3><p id="totalData">0</p></div>
+    <div class="stat-box"><h3>Done</h3><p id="doneData">0</p></div>
+    <div class="stat-box"><h3>Registrasi</h3><p id="regData">0</p></div>
+    <div class="stat-box"><h3>Batal</h3><p id="cancelData">0</p></div>
   </div>
 
-<div class="card">
-
-  <div style="
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    cursor:pointer;
-    margin-bottom:18px;
-  "
-  onclick="toggleFilter()">
-
-    <h2>
-      <i class="fa-solid fa-filter"></i>
-      Data Filter
-    </h2>
-
-    <button
-      type="button"
-      id="filterToggleBtn"
-      class="btn btn-secondary"
-      style="padding:8px 12px"
-    >
-      <i class="fa-solid fa-chevron-down"></i>
-      Show
-    </button>
-
-  </div>
-
-  <div id="filterSection" style="display:none;">
-    
-    <div class="filter-grid">
-      <div class="input-group">
-        <label>Nama</label>
-        <input type="text" id="filterNama" placeholder="Cari nama...">
-      </div>
-
-      <div class="input-group">
-        <label>Divisi</label>
-        <select id="filterDivisi">
-          <option value="">Semua Divisi</option>
-        </select>
-      </div>
-
-      <div class="input-group">
-        <label>Nama Pelatihan</label>
-        <select id="filterTraining">
-          <option value="">Semua Pelatihan</option>
-        </select>
-      </div>
-
-      <div class="input-group">
-      <label>Tanggal Mulai</label>
-      <input type="date" id="filterStartDate">
-      </div>
-
-      <div class="input-group">
-      <label>Tanggal Selesai</label>
-      <input type="date" id="filterEndDate">
-      </div>
-
-      <div class="input-group">
-        <label>Progress</label>
-        <select id="filterProgress">
-          <option value="">Semua Progress</option>
-          <option>Progress Check</option>
-          <option>Registrasi</option>
-          <option>Done</option>
-          <option>Batal</option>
-        </select>
-      </div>
-    
-</div>
-    <div class="filter-actions">
-      <button class="btn btn-primary" onclick="applyFilter()">
-        <i class="fa-solid fa-magnifying-glass"></i>
-        Search
-      </button>
-
-      <button class="btn btn-secondary" onclick="resetFilter()">
-        <i class="fa-solid fa-rotate"></i>
-        Reset Filter
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;margin-bottom:18px" onclick="toggleFilter()">
+      <h2><i class="fa-solid fa-filter"></i> Data Filter</h2>
+      <button type="button" id="filterToggleBtn" class="btn btn-secondary" style="padding:8px 12px">
+        <i class="fa-solid fa-chevron-down"></i> Show
       </button>
     </div>
 
+    <div id="filterSection" style="display:none">
+      <div class="filter-grid">
+        <div class="input-group"><label>Nama</label><input type="text" id="filterNama" placeholder="Cari nama..."></div>
+        <div class="input-group"><label>Divisi</label><select id="filterDivisi"><option value="">Semua Divisi</option></select></div>
+        <div class="input-group"><label>Nama Pelatihan</label><select id="filterTraining"><option value="">Semua Pelatihan</option></select></div>
+        <div class="input-group"><label>Tanggal Mulai (dari)</label><input type="date" id="filterStartDate"></div>
+        <div class="input-group"><label>Tanggal Selesai (hingga)</label><input type="date" id="filterEndDate"></div>
+        <div class="input-group">
+          <label>Progress</label>
+          <select id="filterProgress">
+            <option value="">Semua Progress</option>
+            <option>Progress Check</option><option>Registrasi</option><option>Done</option><option>Batal</option>
+          </select>
+        </div>
+      </div>
+      <div class="filter-actions">
+        <button class="btn btn-primary" onclick="applyFilter()"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
+        <button class="btn btn-secondary" onclick="resetFilter()"><i class="fa-solid fa-rotate"></i> Reset Filter</button>
+      </div>
+    </div>
   </div>
-</div>
 
   <div class="card">
     <div class="table-container">
       <table class="table">
         <thead>
-          <tr>
-            <th>No</th>
-            <th>Nama</th>
-            <th>Divisi</th>
-            <th>Nama Pelatihan</th>
-            <th>Tanggal Mulai</th>
-            <th>Tanggal Selesai</th>
-            <th>Vendor</th>
-            <th>Lokasi</th>
-            <th>Progress</th>
-            <th>TNF</th>
-            <th>UPD</th>
-            <th>Note</th>
-            <th>Data</th>
+          <tr id="theadRow">
+            <th data-key="_no">No</th>
+            <th data-key="nama">Nama <span class="sort-ind"></span></th>
+            <th data-key="divisi">Divisi <span class="sort-ind"></span></th>
+            <th data-key="training">Nama Pelatihan <span class="sort-ind"></span></th>
+            <th data-key="tanggalMulai">Tanggal Mulai <span class="sort-ind"></span></th>
+            <th data-key="tanggalSelesai">Tanggal Selesai <span class="sort-ind"></span></th>
+            <th data-key="vendor">Vendor <span class="sort-ind"></span></th>
+            <th data-key="lokasi">Lokasi <span class="sort-ind"></span></th>
+            <th data-key="progress">Progress <span class="sort-ind"></span></th>
+            <th data-key="tnf">TNF</th>
+            <th data-key="upd">UPD</th>
+            <th data-key="note">Note</th>
+            <th data-key="fileName">Data</th>
             <th>Action</th>
           </tr>
         </thead>
-
         <tbody id="tableBody"></tbody>
       </table>
     </div>
 
-<div class="table-footer">
-
-  <div class="show-entries">
-    <label>Show</label>
-
-    <select id="rowsPerPageSelect"
-      onchange="changeRowsPerPage()">
-      <option value="10">10</option>
-      <option value="25">25</option>
-      <option value="50">50</option>
-      <option value="100">100</option>
-    </select>
-
-    <span>entries</span>
+    <div class="table-footer">
+      <div class="show-entries">
+        <label>Show</label>
+        <select id="rowsPerPageSelect" onchange="changeRowsPerPage()">
+          <option value="10">10</option><option value="25">25</option>
+          <option value="50">50</option><option value="100">100</option>
+        </select>
+        <span>entries</span>
+        <span id="filterInfo" style="color:var(--muted);margin-left:10px"></span>
+      </div>
+      <div class="pagination">
+        <button class="btn btn-secondary" onclick="prevPage()">Prev</button>
+        <span id="pageInfo">Page 1 / 1</span>
+        <button class="btn btn-secondary" onclick="nextPage()">Next</button>
+      </div>
+    </div>
   </div>
-
-  <div class="pagination">
-    <button class="btn btn-secondary" onclick="prevPage()">Prev</button>
-
-    <span id="pageInfo">Page 1</span>
-
-    <button class="btn btn-secondary" onclick="nextPage()">Next</button>
-  </div>
-
 </div>
 
+<!-- TRANSACTION MODAL -->
 <div class="modal" id="transactionModal">
   <div class="modal-content">
-
     <div class="modal-header">
-      <h2>Tambah Transaksi</h2>
+      <h2 id="transactionModalTitle">Tambah Transaksi</h2>
       <button class="close-btn" onclick="closeTransactionModal()">&times;</button>
     </div>
 
     <form id="transactionForm">
       <div class="form-grid">
-
-        <div class="input-group">
-          <label>No</label>
-          <input type="text" id="transactionNo" readonly>
-        </div>
-
-        <div class="input-group">
-          <label>Nama</label>
-          <input type="text" id="nama" required>
-        </div>
-
-        <div class="input-group">
-          <label>Divisi</label>
-          <select id="divisi" required></select>
-        </div>
-
+        <div class="input-group"><label>ID</label><input type="text" id="transactionNo" readonly></div>
+        <div class="input-group"><label>Nama</label><input type="text" id="nama" required></div>
+        <div class="input-group"><label>Divisi</label><select id="divisi" required></select></div>
         <div class="input-group">
           <label>Nama Pelatihan</label>
           <input list="trainingList" id="training" required>
           <datalist id="trainingList"></datalist>
         </div>
-
-        <div class="input-group">
-        <label>Tanggal Mulai</label>
-        <input type="date" id="tanggalMulai" required>
-        </div>
-
-        <div class="input-group">
-       <label>Tanggal Selesai</label>
-       <input type="date" id="tanggalSelesai" required>
-       </div>
-
+        <div class="input-group"><label>Tanggal Mulai</label><input type="date" id="tanggalMulai" required></div>
+        <div class="input-group"><label>Tanggal Selesai</label><input type="date" id="tanggalSelesai" required></div>
         <div class="input-group">
           <label>Vendor</label>
           <input list="vendorList" id="vendor" required>
           <datalist id="vendorList"></datalist>
         </div>
-
         <div class="input-group">
           <label>Lokasi</label>
           <input list="lokasiList" id="lokasi" required>
           <datalist id="lokasiList"></datalist>
         </div>
-
         <div class="input-group">
           <label>Progress</label>
           <select id="progress" required>
             <option value="">Pilih</option>
-            <option>Progress Check</option>
-            <option>Registrasi</option>
-            <option>Done</option>
-            <option>Batal</option>
+            <option>Progress Check</option><option>Registrasi</option><option>Done</option><option>Batal</option>
           </select>
         </div>
-
         <div class="input-group">
           <label>TNF</label>
-          <select id="tnf" required>
-            <option value="">Pilih</option>
-            <option>Sent</option>
-            <option>Not Yet</option>
-          </select>
+          <select id="tnf" required><option value="">Pilih</option><option>Sent</option><option>Not Yet</option></select>
         </div>
-
         <div class="input-group">
           <label>UPD</label>
-          <select id="upd" required>
-            <option value="">Pilih</option>
-            <option>Yes</option>
-            <option>No</option>
-          </select>
+          <select id="upd" required><option value="">Pilih</option><option>Yes</option><option>No</option></select>
         </div>
-
+        <div class="input-group" style="grid-column:1/-1"><label>Note</label><textarea id="note"></textarea></div>
         <div class="input-group" style="grid-column:1/-1">
-          <label>Note</label>
-          <textarea id="note"></textarea>
-        </div>
-
-        <div class="input-group" style="grid-column:1/-1">
-          <label>Upload Data</label>
+          <label>Upload Data (max 5 MB)</label>
           <input type="file" id="fileData" accept=".pdf,.xlsx,.xls,.doc,.docx,.png,.jpg,.jpeg">
+          <small id="currentFileInfo" style="color:var(--muted)"></small>
         </div>
-
       </div>
 
       <div class="modal-actions">
         <button type="button" class="btn btn-secondary" onclick="closeTransactionModal()">Cancel</button>
-        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="submit" class="btn btn-primary" id="saveBtn">Save</button>
       </div>
     </form>
-
   </div>
 </div>
 
+<!-- MASTER MODAL -->
 <div class="modal" id="masterModal">
   <div class="modal-content">
-
     <div class="modal-header">
       <h2>Master Database</h2>
       <button class="close-btn" onclick="closeMasterModal()">&times;</button>
     </div>
 
-<div class="master-tools"
-  gap:10px;
-  flex-wrap:wrap;
-  margin-bottom:20px;
-">
-
-  <button class="btn btn-success" onclick="exportData()">
-    <i class="fa-solid fa-file-export"></i>
-    Export Excel
-  </button>
-
-  <button class="btn btn-secondary"
-    onclick="document.getElementById('importFile').click()">
-    <i class="fa-solid fa-file-import"></i>
-    Import Data
-  </button>
-
-  <button class="btn btn-danger" onclick="clearAllData()">
-    <i class="fa-solid fa-trash"></i>
-    Clear Data
-  </button>
-
-</div>
-
-    <div class="master-grid">
-
-      <div class="master-box">
-        <h3>Nama Pelatihan</h3>
-
-        <div style="display:flex;gap:10px;margin-top:15px">
-          <input type="text" id="newTraining" placeholder="Tambah pelatihan" style="flex:1;padding:12px;border-radius:12px;border:1px solid var(--border)">
-          <button class="btn btn-primary" onclick="addMaster('training')">Tambah</button>
-        </div>
-
-        <div class="master-list" id="trainingMasterList"></div>
-      </div>
-
-      <div class="master-box">
-        <h3>Vendor</h3>
-
-        <div style="display:flex;gap:10px;margin-top:15px">
-          <input type="text" id="newVendor" placeholder="Tambah vendor" style="flex:1;padding:12px;border-radius:12px;border:1px solid var(--border)">
-          <button class="btn btn-primary" onclick="addMaster('vendor')">Tambah</button>
-        </div>
-
-        <div class="master-list" id="vendorMasterList"></div>
-      </div>
-
-      <div class="master-box">
-        <h3>Lokasi</h3>
-
-        <div style="display:flex;gap:10px;margin-top:15px">
-          <input type="text" id="newLokasi" placeholder="Tambah lokasi" style="flex:1;padding:12px;border-radius:12px;border:1px solid var(--border)">
-          <button class="btn btn-primary" onclick="addMaster('lokasi')">Tambah</button>
-        </div>
-
-        <div class="master-list" id="lokasiMasterList"></div>
-      </div>
-
+    <div class="master-tools">
+      <button class="btn btn-success" onclick="exportData()"><i class="fa-solid fa-file-export"></i> Export CSV</button>
+      <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">
+        <i class="fa-solid fa-file-import"></i> Import CSV
+      </button>
+      <button class="btn btn-success" onclick="syncMasterToCloud()"><i class="fa-solid fa-cloud-arrow-up"></i> Sync Master</button>
+      <button class="btn btn-danger" onclick="clearAllData()"><i class="fa-solid fa-trash"></i> Clear Data</button>
     </div>
 
+    <div class="master-grid">
+      <div class="master-box">
+        <h3>Nama Pelatihan</h3>
+        <div style="display:flex;gap:10px;margin-top:15px">
+          <input type="text" id="newTraining" placeholder="Tambah pelatihan" style="flex:1;padding:12px;border-radius:12px;border:1px solid var(--border);background:transparent;color:var(--text)">
+          <button class="btn btn-primary" onclick="addMaster('training')">Tambah</button>
+        </div>
+        <div class="master-list" id="trainingMasterList"></div>
+      </div>
+      <div class="master-box">
+        <h3>Vendor</h3>
+        <div style="display:flex;gap:10px;margin-top:15px">
+          <input type="text" id="newVendor" placeholder="Tambah vendor" style="flex:1;padding:12px;border-radius:12px;border:1px solid var(--border);background:transparent;color:var(--text)">
+          <button class="btn btn-primary" onclick="addMaster('vendor')">Tambah</button>
+        </div>
+        <div class="master-list" id="vendorMasterList"></div>
+      </div>
+      <div class="master-box">
+        <h3>Lokasi</h3>
+        <div style="display:flex;gap:10px;margin-top:15px">
+          <input type="text" id="newLokasi" placeholder="Tambah lokasi" style="flex:1;padding:12px;border-radius:12px;border:1px solid var(--border);background:transparent;color:var(--text)">
+          <button class="btn btn-primary" onclick="addMaster('lokasi')">Tambah</button>
+        </div>
+        <div class="master-list" id="lokasiMasterList"></div>
+      </div>
+    </div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
+'use strict';
 
-const divisions = [
-'SKE','SMR','SPI','JKU','PTA','PWS','PSA','TIF','PIN','PSI','PPU','HIN','HKM','PSU','KEU'
-];
+/* =========================================================
+ * KONFIG
+ * ========================================================= */
+const API_URL = 'https://script.google.com/macros/s/AKfycbwYghFJ4M4Ijrhx30jMOEzL69ghkr88G5LG5owD0iiv4-vrtdQPfWFuxEHSBgEzyhdwaw/exec';
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
 
-const API_URL =
-'https://script.google.com/macros/s/AKfycbxeWaaEUPSUahhnhbuMLw3d4_cBxI91cMEupfOJc8Uaklmw9FMfvxG2L7PTUHjbToke3g/exec';
+const DIVISIONS = ['SKE','SMR','SPI','JKU','PTA','PWS','PSA','TIF','PIN','PSI','PPU','HIN','HKM','PSU','KEU'];
 
-let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+// Skema kolom HARUS sama dengan HEADERS di Code.gs
+const SCHEMA = ['id','nama','divisi','training','tanggalMulai','tanggalSelesai',
+                'vendor','lokasi','progress','tnf','upd','note','fileName','fileUrl','createdAt','updatedAt'];
 
-let masterData = JSON.parse(localStorage.getItem('masterData')) || {
-  training:['Leadership Training'],
-  vendor:['Internal Vendor'],
-  lokasi:['Jakarta']
+/* =========================================================
+ * STATE
+ * ========================================================= */
+let transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
+let masterData   = JSON.parse(localStorage.getItem('masterData')   || 'null') || {
+  training:['Leadership Training'], vendor:['Internal Vendor'], lokasi:['Jakarta']
 };
+let filteredData = null;       // null = tampilkan semua
+let currentPage  = 1;
+let rowsPerPage  = 10;
+let editIndex    = null;
+let currentId    = '';
+let sortKey      = null;
+let sortDir      = 1;
+let syncPassword = sessionStorage.getItem('syncPassword') || '';
 
-let currentPage = 1;
-let rowsPerPage = 10;
-let editIndex = null;
-let currentId = "";
-
-let syncPassword = "";
-
-async function loadDataFromSheet(){
-
-  if(!syncPassword){
-
-    syncPassword = prompt(
-      "Masukkan Password Sinkronisasi"
-    );
-
-    if(!syncPassword){
-      return;
-    }
-  }
-
-  try{
-
-    console.log("Mengambil data...");
-
-    const response = await fetch(
-      API_URL +
-      "?password=" +
-      encodeURIComponent(syncPassword)
-    );
-
-    const data = await response.json();
-
-    console.log(data);
-
-    if(data.success === false){
-
-      alert(data.message);
-
-      syncPassword = "";
-
-      return;
-    }
-
-    transactions = data;
-
-    renderTable();
-
-    showToast("Sync berhasil");
-
-  }catch(error){
-
-    console.error(error);
-
-    alert(error.message);
-
-  }
-
-}
-
+/* =========================================================
+ * HELPERS
+ * ========================================================= */
 function saveLocal(){
   localStorage.setItem('transactions', JSON.stringify(transactions));
-  localStorage.setItem('masterData', JSON.stringify(masterData));
+  localStorage.setItem('masterData',   JSON.stringify(masterData));
 }
 
-function showToast(message){
-  const toast = document.getElementById('toast');
-  toast.innerText = message;
-  toast.classList.add('show');
-
-  setTimeout(()=>{
-    toast.classList.remove('show');
-  },2500);
+function showToast(msg, type){
+  const t = document.getElementById('toast');
+  t.className = 'toast show' + (type ? ' ' + type : '');
+  t.innerText = msg;
+  setTimeout(()=> t.className = 'toast', 2800);
 }
 
+function setSyncStatus(state, text){
+  const el = document.getElementById('syncStatus');
+  el.className = 'sync-status ' + (state || '');
+  document.getElementById('syncStatusText').innerText = text;
+}
+
+function ensurePassword(promptText){
+  if(syncPassword) return true;
+  const p = prompt(promptText || 'Masukkan Password Sinkronisasi');
+  if(!p) return false;
+  syncPassword = p;
+  sessionStorage.setItem('syncPassword', p);
+  return true;
+}
+
+function fileToBase64(file){
+  return new Promise((res, rej)=>{
+    const r = new FileReader();
+    r.onload  = ()=> res(String(r.result).split(',')[1]);
+    r.onerror = rej;
+    r.readAsDataURL(file);
+  });
+}
+
+/* Apps Script Web App tidak dukung custom Content-Type tanpa CORS preflight.
+   Kirim sebagai text/plain agar request "simple" dan tidak kena CORS. */
+async function postAction(payload){
+  const res = await fetch(API_URL, {
+    method:'POST',
+    headers:{ 'Content-Type':'text/plain;charset=utf-8' },
+    body: JSON.stringify({ password: syncPassword, ...payload })
+  });
+  const text = await res.text();
+  try { return JSON.parse(text); }
+  catch { return { success:false, message:text }; }
+}
+
+/* =========================================================
+ * INIT
+ * ========================================================= */
 function initDivisions(){
-  const divisi = document.getElementById('divisi');
-  const filterDivisi = document.getElementById('filterDivisi');
-
-  divisions.forEach(item=>{
-    divisi.innerHTML += `<option>${item}</option>`;
-    filterDivisi.innerHTML += `<option>${item}</option>`;
+  const a = document.getElementById('divisi');
+  const b = document.getElementById('filterDivisi');
+  DIVISIONS.forEach(d=>{
+    a.insertAdjacentHTML('beforeend', `<option>${d}</option>`);
+    b.insertAdjacentHTML('beforeend', `<option>${d}</option>`);
   });
 }
 
 function renderMasterOptions(){
-  document.getElementById('trainingList').innerHTML = masterData.training.map(item=>`<option value="${item}">`).join('');
-  document.getElementById('vendorList').innerHTML = masterData.vendor.map(item=>`<option value="${item}">`).join('');
-  document.getElementById('lokasiList').innerHTML = masterData.lokasi.map(item=>`<option value="${item}">`).join('');
+  document.getElementById('trainingList').innerHTML = masterData.training.map(i=>`<option value="${i}">`).join('');
+  document.getElementById('vendorList').innerHTML   = masterData.vendor.map(i=>`<option value="${i}">`).join('');
+  document.getElementById('lokasiList').innerHTML   = masterData.lokasi.map(i=>`<option value="${i}">`).join('');
 
-  const filterTraining = document.getElementById('filterTraining');
-  filterTraining.innerHTML = '<option value="">Semua Pelatihan</option>';
-
-  masterData.training.forEach(item=>{
-    filterTraining.innerHTML += `<option>${item}</option>`;
-  });
+  const ft = document.getElementById('filterTraining');
+  ft.innerHTML = '<option value="">Semua Pelatihan</option>' + masterData.training.map(i=>`<option>${i}</option>`).join('');
 
   renderMasterList();
 }
 
 function renderMasterList(){
-  renderSingleMaster('training','trainingMasterList');
-  renderSingleMaster('vendor','vendorMasterList');
-  renderSingleMaster('lokasi','lokasiMasterList');
-}
-
-function renderSingleMaster(type, elementId){
-  const el = document.getElementById(elementId);
-
-  el.innerHTML = masterData[type].map((item,index)=>`
-    <div class="master-item">
-      <span>${item}</span>
-
-      <div style="display:flex;gap:8px">
-        <button class="icon-btn edit-btn" onclick="editMaster('${type}',${index})">
-          <i class="fa-solid fa-pen"></i>
-        </button>
-
-        <button class="icon-btn delete-btn" onclick="deleteMaster('${type}',${index})">
-          <i class="fa-solid fa-trash"></i>
-        </button>
-      </div>
-    </div>
-  `).join('');
+  ['training','vendor','lokasi'].forEach(t=>{
+    const el = document.getElementById(t+'MasterList');
+    el.innerHTML = masterData[t].map((item,idx)=>`
+      <div class="master-item">
+        <span>${item}</span>
+        <div style="display:flex;gap:8px">
+          <button class="icon-btn edit-btn"  onclick="editMaster('${t}',${idx})"><i class="fa-solid fa-pen"></i></button>
+          <button class="icon-btn delete-btn" onclick="deleteMaster('${t}',${idx})"><i class="fa-solid fa-trash"></i></button>
+        </div>
+      </div>`).join('');
+  });
 }
 
 function addMaster(type){
-  const inputMap = {
-    training:'newTraining',
-    vendor:'newVendor',
-    lokasi:'newLokasi'
-  };
-
-  const input = document.getElementById(inputMap[type]);
-
-  if(!input.value.trim()) return;
-
-  masterData[type].push(input.value.trim());
-  input.value='';
-
-  saveLocal();
-  renderMasterOptions();
-
-  showToast('Master data berhasil ditambahkan');
-}
-
-function editMaster(type,index){
-  const newValue = prompt('Edit Data', masterData[type][index]);
-
-  if(newValue){
-    masterData[type][index] = newValue;
-    saveLocal();
-    renderMasterOptions();
-    showToast('Master data berhasil diupdate');
+  const map = { training:'newTraining', vendor:'newVendor', lokasi:'newLokasi' };
+  const inp = document.getElementById(map[type]);
+  const val = inp.value.trim();
+  if(!val) return;
+  if(masterData[type].some(i => i.toLowerCase() === val.toLowerCase())){
+    return showToast('Data sudah ada','error');
   }
+  masterData[type].push(val);
+  inp.value = '';
+  saveLocal(); renderMasterOptions();
+  showToast('Master ditambahkan','success');
 }
 
-function deleteMaster(type,index){
-  if(confirm('Hapus data?')){
-    masterData[type].splice(index,1);
-    saveLocal();
-    renderMasterOptions();
-    showToast('Master data berhasil dihapus');
-  }
+function editMaster(type, idx){
+  const v = prompt('Edit Data', masterData[type][idx]);
+  if(v){ masterData[type][idx] = v.trim(); saveLocal(); renderMasterOptions(); showToast('Master diupdate','success'); }
 }
 
-function openTransactionModal(isEdit = false){
+function deleteMaster(type, idx){
+  if(!confirm('Hapus data ini?')) return;
+  masterData[type].splice(idx,1);
+  saveLocal(); renderMasterOptions();
+  showToast('Master dihapus','success');
+}
 
-  document.getElementById('transactionModal')
-  .classList.add('active');
-
+/* =========================================================
+ * MODAL
+ * ========================================================= */
+function openTransactionModal(isEdit){
+  document.getElementById('transactionModal').classList.add('active');
   if(!isEdit){
-
     currentId = Date.now().toString();
-
-    document.getElementById('transactionNo').value =
-      currentId;
-
-    document.querySelector(
-      '#transactionModal .modal-header h2'
-    ).innerText = 'Tambah Transaksi';
+    document.getElementById('transactionNo').value = currentId;
+    document.getElementById('transactionModalTitle').innerText = 'Tambah Transaksi';
+    document.getElementById('currentFileInfo').innerText = '';
   }
 }
-
 function closeTransactionModal(){
   document.getElementById('transactionModal').classList.remove('active');
   document.getElementById('transactionForm').reset();
+  document.getElementById('currentFileInfo').innerText = '';
   editIndex = null;
 }
+function openMasterModal(){  document.getElementById('masterModal').classList.add('active'); }
+function closeMasterModal(){ document.getElementById('masterModal').classList.remove('active'); }
 
-function openMasterModal(){
-  document.getElementById('masterModal').classList.add('active');
-}
-
-function closeMasterModal(){
-  document.getElementById('masterModal').classList.remove('active');
-}
-
-function getBadgeClass(progress){
-  if(progress === 'Done') return 'progress-done';
-  if(progress === 'Registrasi') return 'progress-reg';
-  if(progress === 'Progress Check') return 'progress-check';
+/* =========================================================
+ * RENDER TABEL
+ * ========================================================= */
+function getBadgeClass(p){
+  if(p==='Done') return 'progress-done';
+  if(p==='Registrasi') return 'progress-reg';
+  if(p==='Progress Check') return 'progress-check';
   return 'progress-batal';
 }
 
-function renderTable(data = transactions){
-  const tbody = document.getElementById('tableBody');
+function fmtDate(s){
+  if(!s) return '-';
+  const d = new Date(s);
+  if(isNaN(d)) return s;
+  return d.toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'});
+}
 
-  const start = (currentPage - 1) * rowsPerPage;
-  const paginated = data.slice(start, start + rowsPerPage);
+function getViewData(){
+  const data = filteredData ? filteredData.slice() : transactions.slice();
+  if(sortKey){
+    data.sort((a,b)=>{
+      const x = (a[sortKey]||'').toString().toLowerCase();
+      const y = (b[sortKey]||'').toString().toLowerCase();
+      if(x<y) return -1*sortDir;
+      if(x>y) return  1*sortDir;
+      return 0;
+    });
+  }
+  return data;
+}
 
-  tbody.innerHTML = paginated.map((item,index)=>`
-    <tr>
-      <td>${start + index + 1}</td>
-      <td>${item.nama}</td>
-      <td>${item.divisi}</td>
-      <td>${item.training}</td>
-      <td>${item.tanggalMulai}</td>
-      <td>${item.tanggalSelesai}</td>
-      <td>${item.vendor}</td>
-      <td>${item.lokasi}</td>
-      <td>
-        <span class="badge ${getBadgeClass(item.progress)}">
-          ${item.progress}
-        </span>
-      </td>
-      <td>${item.tnf}</td>
-      <td>${item.upd}</td>
-      <td>${item.note || '-'}</td>
-      <td>
-        ${item.fileName ? `<span class="file-link">${item.fileName}</span>` : '-'}
-      </td>
-      <td>
-        <div class="action-buttons">
-          <button class="icon-btn edit-btn" onclick="editTransaction(${transactions.indexOf(item)})">
-            <i class="fa-solid fa-pen"></i>
-          </button>
+function renderTable(){
+  const data = getViewData();
+  const total = data.length;
+  const totalPages = Math.max(1, Math.ceil(total / rowsPerPage));
+  if(currentPage > totalPages) currentPage = totalPages;
 
-          <button class="icon-btn delete-btn" onclick="deleteTransaction(${transactions.indexOf(item)})">
-            <i class="fa-solid fa-trash"></i>
-          </button>
-        </div>
-      </td>
-    </tr>
-  `).join('');
+  const start = (currentPage-1) * rowsPerPage;
+  const slice = data.slice(start, start + rowsPerPage);
 
-  document.getElementById('pageInfo').innerText = `Page ${currentPage}`;
+  document.getElementById('tableBody').innerHTML = slice.map((item, i)=>{
+    const realIdx = transactions.indexOf(item);
+    const fileCell = item.fileUrl
+      ? `<a class="file-link" href="${item.fileUrl}" target="_blank" rel="noopener">${item.fileName || 'File'}</a>`
+      : (item.fileName ? `<span>${item.fileName}</span>` : '-');
+    return `
+      <tr>
+        <td>${start + i + 1}</td>
+        <td>${item.nama || ''}</td>
+        <td>${item.divisi || ''}</td>
+        <td>${item.training || ''}</td>
+        <td>${fmtDate(item.tanggalMulai)}</td>
+        <td>${fmtDate(item.tanggalSelesai)}</td>
+        <td>${item.vendor || ''}</td>
+        <td>${item.lokasi || ''}</td>
+        <td><span class="badge ${getBadgeClass(item.progress)}">${item.progress || '-'}</span></td>
+        <td>${item.tnf || '-'}</td>
+        <td>${item.upd || '-'}</td>
+        <td>${item.note || '-'}</td>
+        <td>${fileCell}</td>
+        <td>
+          <div class="action-buttons">
+            <button class="icon-btn edit-btn"   onclick="editTransaction(${realIdx})"><i class="fa-solid fa-pen"></i></button>
+            <button class="icon-btn delete-btn" onclick="deleteTransaction(${realIdx})"><i class="fa-solid fa-trash"></i></button>
+          </div>
+        </td>
+      </tr>`;
+  }).join('') || `<tr><td colspan="14" style="text-align:center;color:var(--muted);padding:30px">Belum ada data</td></tr>`;
+
+  document.getElementById('pageInfo').innerText = `Page ${currentPage} / ${totalPages}`;
+  document.getElementById('filterInfo').innerText = filteredData
+    ? `(${total} dari ${transactions.length} data)` : `(${total} data)`;
+
+  // sort indicator
+  document.querySelectorAll('#theadRow th').forEach(th=>{
+    const ind = th.querySelector('.sort-ind');
+    if(!ind) return;
+    ind.innerText = (th.dataset.key === sortKey) ? (sortDir===1?'▲':'▼') : '';
+  });
 
   updateStats();
 }
 
 function updateStats(){
-  document.getElementById('totalData').innerText = transactions.length;
-  document.getElementById('doneData').innerText = transactions.filter(i=>i.progress==='Done').length;
-  document.getElementById('regData').innerText = transactions.filter(i=>i.progress==='Registrasi').length;
+  document.getElementById('totalData').innerText  = transactions.length;
+  document.getElementById('doneData').innerText   = transactions.filter(i=>i.progress==='Done').length;
+  document.getElementById('regData').innerText    = transactions.filter(i=>i.progress==='Registrasi').length;
   document.getElementById('cancelData').innerText = transactions.filter(i=>i.progress==='Batal').length;
 }
 
+/* sort handler */
+document.addEventListener('click', (e)=>{
+  const th = e.target.closest('#theadRow th');
+  if(!th || !th.dataset.key || th.dataset.key === '_no') return;
+  const key = th.dataset.key;
+  if(sortKey === key) sortDir = -sortDir;
+  else { sortKey = key; sortDir = 1; }
+  renderTable();
+});
+
+/* =========================================================
+ * EDIT / DELETE
+ * ========================================================= */
 function editTransaction(index){
-
   const item = transactions[index];
-currentId = item.id;
+  currentId = item.id;
   editIndex = index;
-
-  document.querySelector(
-    '#transactionModal .modal-header h2'
-  ).innerText = 'Edit Transaksi';
-
-  document.getElementById('transactionNo').value =
-    index + 1;
-
-  document.getElementById('nama').value = item.nama;
-  document.getElementById('divisi').value = item.divisi;
-  document.getElementById('training').value = item.training;
-  document.getElementById('tanggalMulai').value = item.tanggalMulai;
-  document.getElementById('tanggalSelesai').value = item.tanggalSelesai;
-  document.getElementById('vendor').value = item.vendor;
-  document.getElementById('lokasi').value = item.lokasi;
-  document.getElementById('progress').value = item.progress;
-  document.getElementById('tnf').value = item.tnf;
-  document.getElementById('upd').value = item.upd;
-  document.getElementById('note').value = item.note;
-
+  document.getElementById('transactionModalTitle').innerText = 'Edit Transaksi';
+  document.getElementById('transactionNo').value     = item.id;
+  document.getElementById('nama').value              = item.nama || '';
+  document.getElementById('divisi').value            = item.divisi || '';
+  document.getElementById('training').value          = item.training || '';
+  document.getElementById('tanggalMulai').value      = (item.tanggalMulai||'').slice(0,10);
+  document.getElementById('tanggalSelesai').value    = (item.tanggalSelesai||'').slice(0,10);
+  document.getElementById('vendor').value            = item.vendor || '';
+  document.getElementById('lokasi').value            = item.lokasi || '';
+  document.getElementById('progress').value          = item.progress || '';
+  document.getElementById('tnf').value               = item.tnf || '';
+  document.getElementById('upd').value               = item.upd || '';
+  document.getElementById('note').value              = item.note || '';
+  document.getElementById('currentFileInfo').innerText = item.fileName ? ('File saat ini: ' + item.fileName) : '';
   openTransactionModal(true);
 }
 
 async function deleteTransaction(index){
-
-  if(!confirm('Hapus transaksi ini?')){
-    return;
-  }
-
+  if(!confirm('Hapus transaksi ini?')) return;
   const deletedId = transactions[index].id;
-
   transactions.splice(index,1);
+  saveLocal(); renderTable();
+  showToast('Data dihapus (lokal)');
 
-  saveLocal();
-  renderTable();
-
-  showToast('Data berhasil dihapus');
-
+  if(!ensurePassword('Password untuk hapus di cloud')) return;
   try{
-
-const response = await fetch(API_URL,{
-  method:'POST',
-  headers:{
-    'Content-Type':'application/json'
-  },
-  body:JSON.stringify({
-    action:'delete',
-    password:syncPassword,
-    id:deletedId
-  })
-});
-
-const result = await response.json();
-
-if(!result.success){
-  alert(result.message);
-  return;
+    const r = await postAction({ action:'delete', id: deletedId });
+    if(!r.success){ showToast(r.message || 'Gagal hapus cloud','error'); return; }
+    showToast('Cloud: ' + r.message,'success');
+  }catch(err){ showToast('Cloud: ' + err.message,'error'); }
 }
 
-showToast(result.message);
-
-console.log(result);
-
-  }catch(error){
-    console.error(error);
-  }
-}
-
+/* =========================================================
+ * FILTER / PAGINATION
+ * ========================================================= */
 function applyFilter(){
-  const nama = document.getElementById('filterNama').value.toLowerCase();
-  const divisi = document.getElementById('filterDivisi').value;
+  const nama     = document.getElementById('filterNama').value.toLowerCase();
+  const divisi   = document.getElementById('filterDivisi').value;
   const training = document.getElementById('filterTraining').value;
-  const startDate = document.getElementById('filterStartDate').value;
-  const endDate = document.getElementById('filterEndDate').value;
+  const start    = document.getElementById('filterStartDate').value;
+  const end      = document.getElementById('filterEndDate').value;
   const progress = document.getElementById('filterProgress').value;
 
-  const filtered = transactions.filter(item=>{
-    return (
-      item.nama.toLowerCase().includes(nama) &&
-      (divisi === '' || item.divisi === divisi) &&
-      (training === '' || item.training === training) &&
-      (startDate === '' || item.tanggalMulai === startDate) &&
-      (endDate === '' || item.tanggalSelesai === endDate) &&
-      (progress === '' || item.progress === progress)
-    );
-  });
-
+  filteredData = transactions.filter(item =>
+    (item.nama||'').toLowerCase().includes(nama) &&
+    (!divisi   || item.divisi === divisi) &&
+    (!training || item.training === training) &&
+    (!start    || (item.tanggalMulai   && item.tanggalMulai   >= start)) &&
+    (!end      || (item.tanggalSelesai && item.tanggalSelesai <= end)) &&
+    (!progress || item.progress === progress)
+  );
   currentPage = 1;
-  renderTable(filtered);
+  renderTable();
 }
 
 function resetFilter(){
-  document.getElementById('filterNama').value='';
-  document.getElementById('filterDivisi').value='';
-  document.getElementById('filterTraining').value='';
-  document.getElementById('filterStartDate').value='';
-  document.getElementById('filterEndDate').value='';
-  document.getElementById('filterProgress').value='';
-
+  ['filterNama','filterDivisi','filterTraining','filterStartDate','filterEndDate','filterProgress']
+    .forEach(id => document.getElementById(id).value = '');
+  filteredData = null;
+  currentPage  = 1;
   renderTable();
 }
 
 function changeRowsPerPage(){
-  rowsPerPage = parseInt(
-    document.getElementById('rowsPerPageSelect').value
-  );
-
+  rowsPerPage = parseInt(document.getElementById('rowsPerPageSelect').value,10);
   currentPage = 1;
-
   renderTable();
 }
-
 function nextPage(){
-  const totalPage = Math.ceil(transactions.length / rowsPerPage);
-
-  if(currentPage < totalPage){
-    currentPage++;
-    renderTable();
-  }
+  const total = Math.ceil(getViewData().length / rowsPerPage);
+  if(currentPage < total){ currentPage++; renderTable(); }
 }
-
 function prevPage(){
-  if(currentPage > 1){
-    currentPage--;
-    renderTable();
-  }
+  if(currentPage > 1){ currentPage--; renderTable(); }
 }
 
 function toggleDarkMode(){
   document.body.classList.toggle('dark');
+  localStorage.setItem('dark', document.body.classList.contains('dark') ? '1' : '0');
 }
 
+function toggleFilter(){
+  const sec = document.getElementById('filterSection');
+  const btn = document.getElementById('filterToggleBtn');
+  const open = sec.style.display === 'none';
+  sec.style.display = open ? 'block' : 'none';
+  btn.innerHTML = open ? '<i class="fa-solid fa-chevron-up"></i> Hide' : '<i class="fa-solid fa-chevron-down"></i> Show';
+}
+
+/* =========================================================
+ * CSV
+ * ========================================================= */
+function csvEscape(v){ return `"${String(v ?? '').replace(/"/g,'""')}"`; }
+
 function exportData(){
-  if(transactions.length === 0){
-    alert('Tidak ada data');
-    return;
-  }
-
-  const headers = Object.keys(transactions[0]);
-
-  const csvRows = [
-  headers.join(';'),
-  ...transactions.map(row=>
-    headers.map(field=>`"${row[field] || ''}"`).join(';')
-  )
-];
-
-  const blob = new Blob([csvRows.join('\n')], {type:'text/csv'});
-
-  const url = URL.createObjectURL(blob);
-
+  if(!transactions.length) return alert('Tidak ada data');
+  const rows = [
+    SCHEMA.join(';'),
+    ...transactions.map(r => SCHEMA.map(k => csvEscape(r[k])).join(';'))
+  ];
+  const blob = new Blob(['\uFEFF' + rows.join('\n')], {type:'text/csv;charset=utf-8'});
   const a = document.createElement('a');
-  a.href = url;
-  a.download = 'training_tracker.csv';
+  a.href = URL.createObjectURL(blob);
+  a.download = `learning_tracker_${new Date().toISOString().slice(0,10)}.csv`;
   a.click();
+  showToast('Export berhasil','success');
+}
 
-  showToast('Export berhasil');
+document.getElementById('importFile').addEventListener('change', e=>{
+  const file = e.target.files[0]; if(!file) return;
+  const r = new FileReader();
+  r.onload = ev=>{
+    const lines = ev.target.result.replace(/^\uFEFF/,'').split(/\r?\n/).filter(Boolean);
+    const headers = lines[0].split(';').map(h=>h.replace(/(^"|"$)/g,''));
+    const imported = lines.slice(1).map(line=>{
+      // simple split (cukup utk CSV dari fitur export ini)
+      const cells = line.split(';').map(c=>c.replace(/^"|"$/g,'').replace(/""/g,'"'));
+      const obj = {};
+      headers.forEach((h,i)=> obj[h] = cells[i] ?? '');
+      if(!obj.id) obj.id = Date.now().toString() + Math.floor(Math.random()*1000);
+      return obj;
+    });
+    transactions = [...transactions, ...imported];
+    saveLocal(); renderTable();
+    showToast(`Import ${imported.length} data berhasil`,'success');
+  };
+  r.readAsText(file);
+  e.target.value = '';
+});
+
+/* =========================================================
+ * CLOUD SYNC
+ * ========================================================= */
+async function loadDataFromSheet(){
+  if(!ensurePassword()) return;
+  setSyncStatus('','Memuat...');
+  try{
+    const res = await fetch(API_URL + '?password=' + encodeURIComponent(syncPassword));
+    const data = await res.json();
+    if(data && data.success === false){
+      setSyncStatus('offline', data.message);
+      syncPassword = ''; sessionStorage.removeItem('syncPassword');
+      return alert(data.message);
+    }
+    transactions = Array.isArray(data) ? data : [];
+    saveLocal(); renderTable();
+    setSyncStatus('online','Tersinkron ' + new Date().toLocaleTimeString('id-ID'));
+    showToast('Sync berhasil','success');
+  }catch(err){
+    setSyncStatus('offline','Gagal sinkron');
+    showToast('Sync gagal: '+err.message,'error');
+  }
 }
 
 async function saveAllToCloud(){
-
-  if(!syncPassword){
-
-    syncPassword = prompt(
-      "Masukkan Password Save To Cloud"
-    );
-
-    if(!syncPassword){
-      return;
-    }
-
-  }
-
+  if(!ensurePassword('Password untuk Save To Cloud')) return;
+  if(!confirm('Replace seluruh data di Google Sheet dengan data lokal?')) return;
   try{
-
-  console.log("DATA DIKIRIM:");
-  console.log({
-    action:"saveAll",
-    password:syncPassword,
-    data:transactions
-  });
-
-  const response = await fetch(API_URL,{
-    method:"POST",
-    headers:{
-      "Content-Type":"application/json"
-    },
-    body:JSON.stringify({
-      action:"saveAll",
-      password:syncPassword,
-      data:transactions
-    })
-  });
-
-  console.log("STATUS:",response.status);
-
-  const text = await response.text();
-
-  console.log("RESPON:");
-  console.log(text);
-
-}catch(error){
-
-  console.error("ERROR:");
-  console.error(error);
-
+    const r = await postAction({ action:'saveAll', data: transactions });
+    if(!r.success) return showToast(r.message || 'Gagal','error');
+    setSyncStatus('online','Tersinkron ' + new Date().toLocaleTimeString('id-ID'));
+    showToast(r.message || 'Save All berhasil','success');
+  }catch(err){ showToast('Error: '+err.message,'error'); }
 }
+
+async function syncMasterToCloud(){
+  if(!ensurePassword()) return;
+  try{
+    const r = await postAction({ action:'saveMaster', master: masterData });
+    showToast(r.message || (r.success ? 'Master tersinkron' : 'Gagal'), r.success?'success':'error');
+  }catch(err){ showToast('Error: '+err.message,'error'); }
 }
-// IMPORT CSV
 
-document.getElementById('importFile').addEventListener('change', function(e){
-  const file = e.target.files[0];
+function clearAllData(){
+  if(!confirm('Hapus seluruh data transaksi (lokal)?')) return;
+  transactions = []; currentPage = 1;
+  saveLocal(); renderTable();
+  showToast('Data lokal dikosongkan');
+}
 
-  if(!file) return;
-
-  const reader = new FileReader();
-
-  reader.onload = function(event){
-    const lines = event.target.result.split('\n');
-
-    const headers = lines[0].split(';');
-
-    const imported = [];
-
-    for(let i=1;i<lines.length;i++){
-      if(!lines[i]) continue;
-
-      const obj = {};
-      const currentLine = lines[i].split(';');
-
-      headers.forEach((header,index)=>{
-        obj[header.replace(/"/g,'')] = currentLine[index]?.replace(/"/g,'');
-      });
-
-      imported.push(obj);
-    }
-
-    transactions = [...transactions, ...imported];
-
-    saveLocal();
-    renderTable();
-
-    showToast('Import berhasil');
-  };
-
-  reader.readAsText(file);
-});
-
-// SAVE TRANSACTION
-
-document.getElementById('transactionForm')
-.addEventListener('submit', async function(e){
+/* =========================================================
+ * SUBMIT TRANSAKSI
+ * ========================================================= */
+document.getElementById('transactionForm').addEventListener('submit', async function(e){
   e.preventDefault();
 
   const fileInput = document.getElementById('fileData');
   const file = fileInput.files[0];
-
   const allowed = ['pdf','xlsx','xls','doc','docx','png','jpg','jpeg'];
 
   if(file){
     const ext = file.name.split('.').pop().toLowerCase();
+    if(!allowed.includes(ext)) return alert('Format file tidak didukung');
+    if(file.size > MAX_FILE_SIZE) return alert('File terlalu besar (max 5 MB)');
+  }
 
-    if(!allowed.includes(ext)){
-      alert('Format file tidak didukung');
-      return;
+  const mulai   = document.getElementById('tanggalMulai').value;
+  const selesai = document.getElementById('tanggalSelesai').value;
+  if(selesai < mulai) return alert('Tanggal selesai tidak boleh lebih kecil dari tanggal mulai');
+
+  if(!confirm('Simpan data?')) return;
+
+  const data = {
+    id: currentId,
+    nama:           document.getElementById('nama').value.trim(),
+    divisi:         document.getElementById('divisi').value,
+    training:       document.getElementById('training').value.trim(),
+    tanggalMulai:   mulai,
+    tanggalSelesai: selesai,
+    vendor:         document.getElementById('vendor').value.trim(),
+    lokasi:         document.getElementById('lokasi').value.trim(),
+    progress:       document.getElementById('progress').value,
+    tnf:            document.getElementById('tnf').value,
+    upd:            document.getElementById('upd').value,
+    note:           document.getElementById('note').value.trim(),
+    fileName:       file ? file.name : (editIndex !== null ? (transactions[editIndex].fileName || '') : ''),
+    fileUrl:        editIndex !== null ? (transactions[editIndex].fileUrl || '') : ''
+  };
+
+  // attach base64 file utk upload ke Drive
+  if(file){
+    try {
+      data.fileBase64 = await fileToBase64(file);
+      data.fileMime   = file.type || 'application/octet-stream';
+    } catch(err){ return alert('Gagal membaca file: '+err.message); }
+  }
+
+  // auto add master
+  ['training','vendor','lokasi'].forEach(k=>{
+    if(data[k] && !masterData[k].some(i=>i.toLowerCase()===data[k].toLowerCase())){
+      masterData[k].push(data[k]);
     }
-  }
+  });
+  renderMasterOptions();
 
-const mulai = document.getElementById('tanggalMulai').value;
-const selesai = document.getElementById('tanggalSelesai').value;
-
-if(selesai < mulai){
-  alert('Tanggal selesai tidak boleh lebih kecil dari tanggal mulai');
-  return;
-}
-const confirmSave =
-confirm(
-'Apakah Anda yakin akan menyimpan data?'
-);
-
-if(!confirmSave){
-  return;
-}
-const data = {
-  id: currentId,
-  nama:document.getElementById('nama').value,
-  divisi:document.getElementById('divisi').value,
-  training:document.getElementById('training').value,
-  tanggalMulai:document.getElementById('tanggalMulai').value,
-  tanggalSelesai:document.getElementById('tanggalSelesai').value,
-  vendor:document.getElementById('vendor').value,
-  lokasi:document.getElementById('lokasi').value,
-  progress:document.getElementById('progress').value,
-  tnf:document.getElementById('tnf').value,
-  upd:document.getElementById('upd').value,
-  note:document.getElementById('note').value,
-  fileName:file ? file.name : ''
-};
-console.log("DATA AKAN DIKIRIM");
-console.log(data);
-
-try{
-
-const response = await fetch(API_URL,{
-  method:'POST',
-  headers:{
-    'Content-Type':'application/json'
-  },
-  body:JSON.stringify({
-    action: editIndex !== null ? "edit" : "add",
-    password:syncPassword,
-    ...data
-  })
-});
-
-const text = await response.text();
-
-console.log("RESPON GOOGLE SCRIPT:");
-console.log(text);
-
-alert(text);
-
-}catch(error){
-
-  console.error(error);
-
-  showToast('Gagal sinkron ke Google Sheet');
-
-}
-
-// =========================
-// AUTO ADD MASTER DATABASE
-// =========================
-
-if(
-  data.training &&
-  !masterData.training.some(
-    item => item.toLowerCase() === data.training.toLowerCase()
-  )
-){
-  masterData.training.push(data.training);
-}
-
-if(
-  data.vendor &&
-  !masterData.vendor.some(
-    item => item.toLowerCase() === data.vendor.toLowerCase()
-  )
-){
-  masterData.vendor.push(data.vendor);
-}
-
-if(
-  data.lokasi &&
-  !masterData.lokasi.some(
-    item => item.toLowerCase() === data.lokasi.toLowerCase()
-  )
-){
-  masterData.lokasi.push(data.lokasi);
-}
-
-// refresh dropdown
-renderMasterOptions();
-
+  // simpan lokal dulu (tanpa base64)
+  const localCopy = { ...data }; delete localCopy.fileBase64; delete localCopy.fileMime;
   if(editIndex !== null){
-    transactions[editIndex] = data;
-    showToast('Data berhasil diupdate');
-  }else{
-    transactions.push(data);
-    showToast('Data berhasil disimpan');
+    transactions[editIndex] = { ...transactions[editIndex], ...localCopy };
+  } else {
+    transactions.push(localCopy);
+  }
+  saveLocal(); renderTable();
+  showToast(editIndex!==null ? 'Data diupdate (lokal)' : 'Data disimpan (lokal)');
+
+  // sync cloud (background)
+  if(ensurePassword('Password untuk simpan ke cloud')){
+    const btn = document.getElementById('saveBtn');
+    btn.disabled = true; btn.innerText = 'Syncing...';
+    try{
+      const r = await postAction({ action: editIndex !== null ? 'edit' : 'add', ...data });
+      if(r.success){
+        showToast('Cloud: ' + r.message,'success');
+        // refresh dari sheet supaya fileUrl ikut terbaca
+        await loadDataFromSheet();
+      } else {
+        showToast('Cloud: ' + (r.message||'Gagal'),'error');
+      }
+    }catch(err){ showToast('Cloud error: '+err.message,'error'); }
+    finally { btn.disabled = false; btn.innerText = 'Save'; }
   }
 
-  saveLocal();
-  renderTable();
   closeTransactionModal();
 });
 
-function clearAllData(){
-
-  const confirmDelete = confirm(
-    'Apakah yakin ingin menghapus seluruh data transaksi?'
-  );
-
-  if(!confirmDelete) return;
-
-  // hapus semua transaksi
-  transactions = [];
-
-  // reset halaman
-  currentPage = 1;
-
-  // simpan local storage
-  saveLocal();
-
-  // refresh table
-  renderTable();
-
-  // toast
-  showToast('Semua data berhasil dihapus');
-}
-
-function toggleFilter(){
-
-  const section = document.getElementById('filterSection');
-  const btn = document.getElementById('filterToggleBtn');
-
-  if(section.style.display === 'none'){
-
-    section.style.display = 'block';
-
-    btn.innerHTML = `
-      <i class="fa-solid fa-chevron-up"></i>
-      Hide
-    `;
-
-  }else{
-
-    section.style.display = 'none';
-
-    btn.innerHTML = `
-      <i class="fa-solid fa-chevron-down"></i>
-      Show
-    `;
-  }
-}
-
+/* =========================================================
+ * BOOTSTRAP
+ * ========================================================= */
+if(localStorage.getItem('dark')==='1') document.body.classList.add('dark');
 initDivisions();
 renderMasterOptions();
-window.onload = function(){
-  renderTable();
-}
+renderTable();
+// auto sync di startup kalau ada password tersimpan
+if(syncPassword) loadDataFromSheet();
 </script>
 
 </body>
